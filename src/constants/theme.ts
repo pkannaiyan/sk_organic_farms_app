@@ -75,6 +75,7 @@ export const brand = {
     twitter: 'https://www.skorganicfarms.com/@skorganicfarms1',
     facebook: 'https://www.facebook.com/skorganicfarms',
     instagram: 'https://www.instagram.com/sk_organic_farms/',
+    youtube: 'https://www.youtube.com/channel/UCskorganicfarms',
   },
   locations: {
     chennaiShop: {
