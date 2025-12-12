@@ -199,27 +199,34 @@ const HomeScreen = ({navigation}: any) => {
     });
   }, [navigation]);
 
-  // Navigate to collection
-  const navigateToCollection = useCallback((handle: string) => {
+  // Navigate to collection - always navigate even if not pre-loaded
+  const navigateToCollection = useCallback((handle: string, title?: string) => {
     const collection = collections.find(c => c.handle === handle);
     if (collection) {
       navigation.navigate('CollectionDetail', {collection});
     } else {
-      // If collection not found, navigate to Collections screen
-      navigation.navigate('Collections');
+      // Create a minimal collection object to navigate
+      navigation.navigate('CollectionDetail', {
+        collection: {
+          id: handle,
+          handle: handle,
+          title: title || handle.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        }
+      });
     }
   }, [collections, navigation]);
 
-  // Handle category pill press
+  // Handle category pill press - navigate to respective collection
   const handlePillPress = useCallback((index: number, pill: typeof CATEGORY_PILLS[0]) => {
     setActivePill(index);
     
     if (pill.type === 'all') {
       navigation.navigate('Collections');
     } else if (pill.type === 'brands') {
-      navigation.navigate('Collections'); // Navigate to brands page
+      navigation.navigate('Collections');
     } else {
-      navigateToCollection(pill.handle);
+      // Navigate to collection with handle and name
+      navigateToCollection(pill.handle, pill.name);
     }
   }, [navigation, navigateToCollection]);
 
