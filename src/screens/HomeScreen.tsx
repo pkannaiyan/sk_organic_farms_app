@@ -310,33 +310,40 @@ const HomeScreen = ({navigation}: any) => {
         </Text>
       </View>
 
-      {/* Header */}
+      {/* Blinkit-Style Header */}
       <View style={styles.header}>
+        {/* Location Bar - Green Top Strip */}
         <View style={styles.topBar}>
-          <Image source={{uri: LOGO_IMAGE}} style={styles.headerLogo} resizeMode="contain" />
           <View style={styles.locationRight}>
             <Text style={styles.locationText}>📍</Text>
             <View>
               <Text style={styles.deliverTo}>Deliver to</Text>
-              <Text style={styles.locationBold}>Chennai, Tamil Nadu</Text>
+              <Text style={styles.locationBold}>Chennai, Tamil Nadu ▼</Text>
             </View>
+          </View>
+          <View style={styles.contactInfo}>
+            <Text style={styles.contactItem}>📧 skofarms@gmail.com</Text>
+            <Text style={styles.contactItem}>📞 +91 6380464748</Text>
           </View>
         </View>
 
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <View style={styles.searchWrap}>
-            <Text style={styles.searchIconText}>🔍</Text>
-            <TextInput 
-              style={styles.searchInput} 
-              placeholder="Search for seeds, plants, tools..." 
-              placeholderTextColor="#888" 
-              value={searchQuery} 
-              onChangeText={setSearchQuery} 
-            />
-            <TouchableOpacity onPress={() => setIsListening(true)} style={styles.voiceBtn}>
-              <Text style={styles.voiceIcon}>{isListening ? '🔴' : '🎤'}</Text>
-            </TouchableOpacity>
+        {/* Main Header with Logo and Search */}
+        <View style={styles.mainHeader}>
+          <Image source={{uri: LOGO_IMAGE}} style={styles.headerLogo} resizeMode="contain" />
+          <View style={styles.searchContainer}>
+            <View style={styles.searchWrap}>
+              <Text style={styles.searchIconText}>🔍</Text>
+              <TextInput 
+                style={styles.searchInput} 
+                placeholder="Search for seeds, plants, tools..." 
+                placeholderTextColor="#999" 
+                value={searchQuery} 
+                onChangeText={setSearchQuery} 
+              />
+              <TouchableOpacity onPress={() => setIsListening(true)} style={styles.voiceBtn}>
+                <Text style={styles.voiceIcon}>{isListening ? '🔴' : '🎤'}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <TouchableOpacity style={styles.cartBtn} onPress={() => navigation.navigate('Cart')}>
             <Text style={styles.cartIconText}>🛒</Text>
@@ -392,32 +399,38 @@ const HomeScreen = ({navigation}: any) => {
           </TouchableOpacity>
         </View>
 
-        {/* Shop by Category */}
+        {/* Blinkit-Style Category Pills */}
         <View style={styles.categorySection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Shop by Category</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Collections')}>
-              <Text style={styles.viewAll}>See All</Text>
-            </TouchableOpacity>
-          </View>
           <FlatList
             horizontal
             data={CATEGORY_PILLS}
             keyExtractor={(_, i) => `cat-${i}`}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categoryPillsContent}
-            renderItem={({item, index}) => (
-              <TouchableOpacity
-                style={[styles.categoryPill, index === activePill && styles.categoryPillActive]}
-                onPress={() => handlePillPress(index, item)}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.categoryEmojiWrap, {backgroundColor: item.color + '20'}]}>
-                  <Text style={styles.categoryEmoji}>{item.emoji}</Text>
-                </View>
-                <Text style={styles.categoryPillText}>{item.name}</Text>
-              </TouchableOpacity>
-            )}
+            renderItem={({item, index}) => {
+              const isActive = index === activePill;
+              const isOffer = item.name === 'Offers';
+              return (
+                <TouchableOpacity
+                  style={[
+                    styles.categoryPill,
+                    isActive && styles.categoryPillActive,
+                    isOffer && !isActive && styles.categoryPillOffer,
+                  ]}
+                  onPress={() => handlePillPress(index, item)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.categoryEmojiWrap}>
+                    <Text style={styles.categoryEmoji}>{item.emoji}</Text>
+                  </View>
+                  <Text style={[
+                    styles.categoryPillText,
+                    isActive && styles.categoryPillTextActive,
+                    isOffer && !isActive && styles.categoryPillTextOffer,
+                  ]}>{item.name}</Text>
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
 
@@ -667,26 +680,87 @@ const styles = StyleSheet.create({
   christmasBold: {fontWeight: 'bold'},
   christmasCode: {backgroundColor: '#fff', color: '#c41e3a', paddingHorizontal: 6, paddingVertical: 2, fontWeight: 'bold', borderRadius: 4, overflow: 'hidden'},
 
-  // Header
-  header: {backgroundColor: '#fff', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#e5e5e5'},
-  topBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10},
-  headerLogo: {width: 110, height: 40},
-  locationRight: {flexDirection: 'row', alignItems: 'center'},
-  locationText: {fontSize: 18, marginRight: 6},
-  deliverTo: {fontSize: 10, color: '#888'},
-  locationBold: {fontWeight: 'bold', color: '#333', fontSize: 12},
+  // Blinkit-Style Header
+  header: {backgroundColor: '#fff'},
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: '#1B5E20',
+    borderBottomWidth: 3,
+    borderBottomColor: '#8BC34A',
+  },
+  locationRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  locationText: {fontSize: 16, marginRight: 8},
+  deliverTo: {fontSize: 9, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: 0.5},
+  locationBold: {fontWeight: '600', color: '#fff', fontSize: 12},
+  contactInfo: {flexDirection: 'row', alignItems: 'center'},
+  contactItem: {color: '#fff', fontSize: 11, fontWeight: '600', marginLeft: 16},
+  mainHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#f8fdf8',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  headerLogo: {width: 80, height: 50},
 
-  // Search
-  searchContainer: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12},
-  searchWrap: {flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 8, paddingHorizontal: 12, height: 44},
+  // Blinkit-Style Search Bar
+  searchContainer: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  searchWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e8f5e9',
+    borderWidth: 2,
+    borderColor: '#81C784',
+    borderRadius: 30,
+    paddingHorizontal: 14,
+    height: 46,
+  },
   searchIconText: {fontSize: 16},
   searchInput: {flex: 1, marginHorizontal: 10, fontSize: 14, color: '#333'},
-  voiceBtn: {padding: 6},
-  voiceIcon: {fontSize: 18},
-  cartBtn: {marginLeft: 12, position: 'relative'},
-  cartIconText: {fontSize: 26},
-  cartBadge: {position: 'absolute', top: -4, right: -4, backgroundColor: '#c41e3a', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center'},
-  cartBadgeText: {color: '#fff', fontSize: 10, fontWeight: 'bold'},
+  voiceBtn: {
+    padding: 6,
+    backgroundColor: '#c8e6c9',
+    borderRadius: 8,
+  },
+  voiceIcon: {fontSize: 16},
+  cartBtn: {
+    position: 'relative',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#81C784',
+  },
+  cartIconText: {fontSize: 22},
+  cartBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#2E7D32',
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  cartBadgeText: {color: '#fff', fontSize: 10, fontWeight: '700'},
 
   // Hero
   heroSection: {height: 200},
@@ -715,14 +789,43 @@ const styles = StyleSheet.create({
   flashBtn: {backgroundColor: '#1da362', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20},
   flashBtnText: {color: '#fff', fontSize: 11, fontWeight: '600'},
 
-  // Category Section
-  categorySection: {backgroundColor: '#fff', paddingVertical: 16, marginTop: 8},
+  // Blinkit-Style Category Pills Bar
+  categorySection: {
+    backgroundColor: '#E8F5E9',
+    paddingVertical: 12,
+    borderTopWidth: 2,
+    borderTopColor: '#81C784',
+  },
   categoryPillsContent: {paddingHorizontal: 12},
-  categoryPill: {alignItems: 'center', marginRight: 16},
-  categoryPillActive: {opacity: 0.8},
-  categoryEmojiWrap: {width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', marginBottom: 6},
-  categoryEmoji: {fontSize: 26},
-  categoryPillText: {fontSize: 11, color: '#333', fontWeight: '500'},
+  categoryPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: '#81C784',
+    borderRadius: 25,
+    marginRight: 10,
+    shadowColor: '#2E7D32',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  categoryPillActive: {
+    backgroundColor: '#1B5E20',
+    borderColor: '#1B5E20',
+  },
+  categoryPillOffer: {
+    backgroundColor: '#FF6B6B',
+    borderColor: '#FF6B6B',
+  },
+  categoryEmojiWrap: {marginRight: 6},
+  categoryEmoji: {fontSize: 18},
+  categoryPillText: {fontSize: 13, color: '#2E7D32', fontWeight: '600'},
+  categoryPillTextActive: {color: '#fff'},
+  categoryPillTextOffer: {color: '#fff'},
 
   // Quick Info Bar
   quickInfoBar: {flexDirection: 'row', backgroundColor: '#fff', paddingVertical: 12, paddingHorizontal: 8, marginTop: 2},
