@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   ScrollView,
@@ -10,7 +10,6 @@ import {
   Linking,
   TextInput,
   ActivityIndicator,
-  FlatList,
 } from 'react-native';
 import {colors, brand, specialSections, newsletter} from '../constants/theme';
 import {
@@ -111,16 +110,13 @@ const HomeScreen = ({navigation}: any) => {
   const [collections, setCollections] = useState<ShopifyCollection[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<{[key: string]: ShopifyProduct[]}>({});
   const [loading, setLoading] = useState(true);
-  const slideRef = useRef<FlatList>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const nextSlide = (activeSlide + 1) % HERO_SLIDES.length;
-      setActiveSlide(nextSlide);
-      slideRef.current?.scrollToIndex({index: nextSlide, animated: true});
+      setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [activeSlide]);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -220,32 +216,36 @@ const HomeScreen = ({navigation}: any) => {
         
         {/* Hero Slideshow with Real Images */}
         <View style={styles.sliderContainer}>
-          <FlatList
-            ref={slideRef}
-            data={HERO_SLIDES}
+          <ScrollView
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             onMomentumScrollEnd={(e) => {
               const index = Math.round(e.nativeEvent.contentOffset.x / width);
               setActiveSlide(index);
-            }}
-            renderItem={({item}) => (
+            }}>
+            {HERO_SLIDES.map((slide, index) => (
               <TouchableOpacity 
+                key={index}
                 style={styles.slideItem}
-                onPress={() => navigateToCollection(item.link)}>
-                <Image source={{uri: item.image}} style={styles.slideImage} resizeMode="cover" />
+                activeOpacity={0.9}
+                onPress={() => navigateToCollection(slide.link)}>
+                <Image 
+                  source={{uri: slide.image}} 
+                  style={styles.slideImage} 
+                  resizeMode="cover"
+                  onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
+                />
                 <View style={styles.slideOverlay}>
-                  <Text style={styles.slideTitle}>{item.title}</Text>
-                  <Text style={styles.slideSubtitle}>{item.subtitle}</Text>
+                  <Text style={styles.slideTitle}>{slide.title}</Text>
+                  <Text style={styles.slideSubtitle}>{slide.subtitle}</Text>
                   <View style={styles.slideButton}>
-                    <Text style={styles.slideButtonText}>{item.buttonText}</Text>
+                    <Text style={styles.slideButtonText}>{slide.buttonText}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
-            )}
-            keyExtractor={(_, index) => index.toString()}
-          />
+            ))}
+          </ScrollView>
           <View style={styles.pagination}>
             {HERO_SLIDES.map((_, index) => (
               <View
