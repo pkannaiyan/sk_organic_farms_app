@@ -30,7 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.imageContainer}>
         {image ? (
-          <Image source={{uri: image}} style={styles.image} />
+          <Image source={{uri: image}} style={styles.image} resizeMode="cover" />
         ) : (
           <View style={styles.placeholderImage}>
             <Text style={styles.placeholderText}>🌿</Text>
@@ -94,7 +94,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   placeholderImage: {
     width: '100%',
@@ -175,4 +174,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProductCard;
-

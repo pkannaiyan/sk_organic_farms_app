@@ -9,6 +9,7 @@ import {
   Image,
   Linking,
   TextInput,
+  ImageBackground,
 } from 'react-native';
 import Header from '../components/Header';
 import SectionHeader from '../components/SectionHeader';
@@ -19,77 +20,100 @@ import {
   brand,
   heroSlides,
   collections,
-  featuredCollections,
-  brands,
   specialSections,
   galleryImages,
   newsletter,
 } from '../constants/theme';
-import {CDN_URL} from '../config/shopify';
+import {themeImages, CDN_BASE_URL} from '../config/shopify';
 
 const {width} = Dimensions.get('window');
+
+// Helper to get CDN image URL
+const getCdnImage = (filename: string) => `${CDN_BASE_URL}/${filename}`;
 
 // Sample products - In production, these would come from Shopify API
 const sampleProducts = {
   'organic-seeds': [
-    {id: '1', title: 'Native Tomato Seeds', price: 49, compareAtPrice: 69, image: null},
-    {id: '2', title: 'Organic Chilli Seeds', price: 39, compareAtPrice: 59, image: null},
-    {id: '3', title: 'Brinjal Seeds Pack', price: 45, image: null},
-    {id: '4', title: 'Lady Finger Seeds', price: 35, image: null},
-    {id: '5', title: 'Coriander Seeds', price: 29, image: null},
+    {id: '1', title: 'Native Tomato Seeds', price: 49, compareAtPrice: 69, image: getCdnImage('IMG-2091.png')},
+    {id: '2', title: 'Organic Chilli Seeds', price: 39, compareAtPrice: 59, image: getCdnImage('IMG-2091.png')},
+    {id: '3', title: 'Brinjal Seeds Pack', price: 45, image: getCdnImage('IMG-2091.png')},
+    {id: '4', title: 'Lady Finger Seeds', price: 35, image: getCdnImage('IMG-2091.png')},
+    {id: '5', title: 'Coriander Seeds', price: 29, image: getCdnImage('IMG-2091.png')},
   ],
   'justbrews': [
-    {id: '6', title: 'Filter Coffee Powder', price: 299, image: null},
-    {id: '7', title: 'Green Tea Premium', price: 249, image: null},
-    {id: '8', title: 'Herbal Tea Mix', price: 199, image: null},
+    {id: '6', title: 'Filter Coffee Powder', price: 299, image: getCdnImage('JustBrew_logo.png')},
+    {id: '7', title: 'Green Tea Premium', price: 249, image: getCdnImage('JustBrew_logo.png')},
+    {id: '8', title: 'Herbal Tea Mix', price: 199, image: getCdnImage('JustBrew_logo.png')},
   ],
   'grow-bags-for-terrace-garden': [
-    {id: '9', title: 'HDPE Grow Bag 15x15', price: 89, image: null},
-    {id: '10', title: 'HDPE Grow Bag 12x12', price: 69, image: null},
-    {id: '11', title: 'Grow Bag Pack of 10', price: 399, compareAtPrice: 499, image: null},
+    {id: '9', title: 'HDPE Grow Bag 15x15', price: 89, image: getCdnImage('grow_bag.jpg')},
+    {id: '10', title: 'HDPE Grow Bag 12x12', price: 69, image: getCdnImage('grow_bag.jpg')},
+    {id: '11', title: 'Grow Bag Pack of 10', price: 399, compareAtPrice: 499, image: getCdnImage('IMG-2104.png')},
   ],
   'daily-deals': [
-    {id: '12', title: 'Combo: Seeds + Manure', price: 599, compareAtPrice: 899, image: null},
-    {id: '13', title: 'Garden Starter Kit', price: 1299, compareAtPrice: 1999, image: null},
-    {id: '14', title: 'Organic Manure 5kg', price: 249, compareAtPrice: 349, image: null},
+    {id: '12', title: 'Combo: Seeds + Manure', price: 599, compareAtPrice: 899, image: getCdnImage('daily.png')},
+    {id: '13', title: 'Garden Starter Kit', price: 1299, compareAtPrice: 1999, image: getCdnImage('IMG-2097.png')},
+    {id: '14', title: 'Organic Manure 5kg', price: 249, compareAtPrice: 349, image: getCdnImage('IMG-2096.png')},
   ],
   'sea-weed-products': [
-    {id: '15', title: 'Seaweed Extract 1L', price: 449, compareAtPrice: 599, image: null},
-    {id: '16', title: 'Liquid Seaweed Spray', price: 299, image: null},
+    {id: '15', title: 'Seaweed Extract 1L', price: 449, compareAtPrice: 599, image: getCdnImage('SEAWEED.jpg')},
+    {id: '16', title: 'Liquid Seaweed Spray', price: 299, image: getCdnImage('SEAWEED.jpg')},
   ],
   'skin-and-hair-care': [
-    {id: '17', title: 'Organic Aloe Vera Gel', price: 199, image: null},
-    {id: '18', title: 'Herbal Hair Oil', price: 349, image: null},
+    {id: '17', title: 'Organic Aloe Vera Gel', price: 199, image: getCdnImage('4786E3F2-BDCD-484D-9274-66DE8A5A4834.webp')},
+    {id: '18', title: 'Herbal Hair Oil', price: 349, image: getCdnImage('4786E3F2-BDCD-484D-9274-66DE8A5A4834.webp')},
   ],
   'live-plants': [
-    {id: '19', title: 'Lemongrass Plant', price: 149, image: null},
-    {id: '20', title: 'Tulsi Plant', price: 99, image: null},
-    {id: '21', title: 'Curry Leaves Plant', price: 179, image: null},
+    {id: '19', title: 'Lemongrass Plant', price: 149, image: getCdnImage('LemonGrass_e7758c23-de7a-4c5d-8689-dd59209ba9f5.jpg')},
+    {id: '20', title: 'Tulsi Plant', price: 99, image: getCdnImage('LemonGrass_e7758c23-de7a-4c5d-8689-dd59209ba9f5.jpg')},
+    {id: '21', title: 'Curry Leaves Plant', price: 179, image: getCdnImage('LemonGrass_e7758c23-de7a-4c5d-8689-dd59209ba9f5.jpg')},
   ],
   'biocarve': [
-    {id: '22', title: 'BioCarve Tomato Seeds', price: 59, image: null},
-    {id: '23', title: 'BioCarve Flower Mix', price: 89, image: null},
+    {id: '22', title: 'BioCarve Tomato Seeds', price: 59, image: getCdnImage('biocurve.jpg')},
+    {id: '23', title: 'BioCarve Flower Mix', price: 89, image: getCdnImage('biocurve.jpg')},
   ],
   'organic-millets-rice': [
-    {id: '24', title: 'Foxtail Millet 1kg', price: 149, image: null},
-    {id: '25', title: 'Little Millet 1kg', price: 169, image: null},
-    {id: '26', title: 'Organic Brown Rice', price: 199, image: null},
+    {id: '24', title: 'Foxtail Millet 1kg', price: 149, image: getCdnImage('best_seller.jpg')},
+    {id: '25', title: 'Little Millet 1kg', price: 169, image: getCdnImage('best_seller.jpg')},
+    {id: '26', title: 'Organic Brown Rice', price: 199, image: getCdnImage('best_seller.jpg')},
   ],
   'falcon-1': [
-    {id: '27', title: 'Falcon Hand Trowel', price: 299, image: null},
-    {id: '28', title: 'Falcon Pruning Shears', price: 599, image: null},
-    {id: '29', title: 'Falcon Garden Fork', price: 449, image: null},
+    {id: '27', title: 'Falcon Hand Trowel', price: 299, image: getCdnImage('falcon.jpg')},
+    {id: '28', title: 'Falcon Pruning Shears', price: 599, image: getCdnImage('falcon.jpg')},
+    {id: '29', title: 'Falcon Garden Fork', price: 449, image: getCdnImage('falcon.jpg')},
   ],
+};
+
+// Collection images mapping
+const collectionImages: {[key: string]: string} = {
+  'organic-manures': getCdnImage('IMG-2096.png'),
+  'organic-seeds': getCdnImage('IMG-2091.png'),
+  'organic-millets-rice': getCdnImage('best_seller.jpg'),
+  'falcon-1': getCdnImage('falcon.jpg'),
+  'grow-bags-for-terrace-garden': getCdnImage('IMG-2104.png'),
+  'skin-and-hair-care': getCdnImage('4786E3F2-BDCD-484D-9274-66DE8A5A4834.webp'),
+  'sea-weed-products': getCdnImage('SEAWEED.jpg'),
+  'our-packages': getCdnImage('IMG-2097.png'),
+  'potting-medium': getCdnImage('IMG-2090.png'),
+  'garden-sprayer': getCdnImage('3110-05.jpg'),
+  'live-plants': getCdnImage('LemonGrass_e7758c23-de7a-4c5d-8689-dd59209ba9f5.jpg'),
 };
 
 const HomeScreen = ({navigation}: any) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [email, setEmail] = useState('');
 
+  // Hero slide images
+  const slideImages = [
+    getCdnImage('IMG_2100.png'),
+    getCdnImage('IMG_2099.png'),
+    getCdnImage('IMG_2101.png'),
+  ];
+
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveSlide(prev => (prev + 1) % heroSlides.length);
-    }, 7000); // 7 seconds as per theme settings
+    }, 7000);
     return () => clearInterval(timer);
   }, []);
 
@@ -108,15 +132,20 @@ const HomeScreen = ({navigation}: any) => {
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         
-        {/* 1. HERO SLIDESHOW */}
+        {/* 1. HERO SLIDESHOW with actual images */}
         <View style={styles.sliderContainer}>
-          <View style={[styles.slide, {backgroundColor: colors.primary}]}>
-            <Text style={styles.slideTitle}>{heroSlides[activeSlide].title}</Text>
-            <Text style={styles.slideSubtitle}>{heroSlides[activeSlide].subtitle}</Text>
-            <TouchableOpacity style={styles.slideButton}>
-              <Text style={styles.slideButtonText}>{heroSlides[activeSlide].buttonText}</Text>
-            </TouchableOpacity>
-          </View>
+          <ImageBackground
+            source={{uri: slideImages[activeSlide]}}
+            style={styles.slide}
+            imageStyle={styles.slideImage}>
+            <View style={styles.slideOverlay}>
+              <Text style={styles.slideTitle}>{heroSlides[activeSlide].title}</Text>
+              <Text style={styles.slideSubtitle}>{heroSlides[activeSlide].subtitle}</Text>
+              <TouchableOpacity style={styles.slideButton}>
+                <Text style={styles.slideButtonText}>{heroSlides[activeSlide].buttonText}</Text>
+              </TouchableOpacity>
+            </View>
+          </ImageBackground>
           <View style={styles.pagination}>
             {heroSlides.map((_, index) => (
               <TouchableOpacity
@@ -131,8 +160,21 @@ const HomeScreen = ({navigation}: any) => {
           </View>
         </View>
 
-        {/* 2. ABOUT US - Rich Text */}
+        {/* Promo Banner - Christmas/Holiday Theme */}
+        <View style={styles.promoBanner}>
+          <Text style={styles.promoTitle}>🎄 Holiday Special! 🎄</Text>
+          <Text style={styles.promoText}>
+            Use code AADI15 for Flat 15% OFF on all orders!
+          </Text>
+        </View>
+
+        {/* 2. ABOUT US */}
         <View style={styles.aboutSection}>
+          <Image 
+            source={{uri: themeImages.logo}}
+            style={styles.aboutLogo}
+            resizeMode="contain"
+          />
           <Text style={styles.aboutTitle}>About Us</Text>
           <Text style={styles.aboutPrevName}>Previously known as {brand.previousName}</Text>
           <Text style={styles.aboutText}>
@@ -144,11 +186,7 @@ const HomeScreen = ({navigation}: any) => {
         </View>
 
         {/* 3. FEATURED COLLECTION: Native Organic Seeds */}
-        <SectionHeader
-          title="Native Organic Seeds"
-          showViewAll
-          onViewAll={() => {}}
-        />
+        <SectionHeader title="Native Organic Seeds" showViewAll onViewAll={() => {}} />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -160,6 +198,7 @@ const HomeScreen = ({navigation}: any) => {
               title={product.title}
               price={product.price}
               compareAtPrice={product.compareAtPrice}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
@@ -183,6 +222,7 @@ const HomeScreen = ({navigation}: any) => {
               id={product.id}
               title={product.title}
               price={product.price}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
@@ -202,13 +242,14 @@ const HomeScreen = ({navigation}: any) => {
               title={product.title}
               price={product.price}
               compareAtPrice={product.compareAtPrice}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
           ))}
         </ScrollView>
 
-        {/* 6. COLLECTION LIST: Our Collection */}
+        {/* 6. COLLECTION LIST: Our Collection with actual images */}
         <SectionHeader title="Our Collection" />
         <ScrollView
           horizontal
@@ -220,6 +261,7 @@ const HomeScreen = ({navigation}: any) => {
               id={collection.id}
               name={collection.title}
               icon={collection.icon}
+              image={collectionImages[collection.id]}
               onPress={() => {}}
             />
           ))}
@@ -238,6 +280,7 @@ const HomeScreen = ({navigation}: any) => {
               title={product.title}
               price={product.price}
               compareAtPrice={product.compareAtPrice}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
@@ -257,19 +300,22 @@ const HomeScreen = ({navigation}: any) => {
               title={product.title}
               price={product.price}
               compareAtPrice={product.compareAtPrice}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
           ))}
         </ScrollView>
 
-        {/* 9. FEATURED PRODUCT: Potting Soil */}
+        {/* 9. FEATURED PRODUCT: Potting Soil with image */}
         <View style={styles.featuredProductSection}>
           <Text style={styles.featuredProductTitle}>Potting Soil</Text>
           <View style={styles.featuredProductCard}>
-            <View style={styles.featuredProductImage}>
-              <Text style={styles.featuredProductEmoji}>🪴</Text>
-            </View>
+            <Image
+              source={{uri: getCdnImage('IMG-2090.png')}}
+              style={styles.featuredProductImg}
+              resizeMode="cover"
+            />
             <View style={styles.featuredProductInfo}>
               <Text style={styles.featuredProductName}>Potting Mix - Premium Quality</Text>
               <Text style={styles.featuredProductPrice}>₹299</Text>
@@ -295,13 +341,14 @@ const HomeScreen = ({navigation}: any) => {
               id={product.id}
               title={product.title}
               price={product.price}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
           ))}
         </ScrollView>
 
-        {/* 11. FEATURED COLLECTION: Live Plants & Saplings */}
+        {/* 11. FEATURED COLLECTION: Live Plants */}
         <SectionHeader title="Live Plants & Saplings" showViewAll onViewAll={() => {}} />
         <ScrollView
           horizontal
@@ -313,6 +360,7 @@ const HomeScreen = ({navigation}: any) => {
               id={product.id}
               title={product.title}
               price={product.price}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
@@ -331,6 +379,7 @@ const HomeScreen = ({navigation}: any) => {
               id={product.id}
               title={product.title}
               price={product.price}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
@@ -349,6 +398,7 @@ const HomeScreen = ({navigation}: any) => {
               id={product.id}
               title={product.title}
               price={product.price}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
@@ -367,6 +417,7 @@ const HomeScreen = ({navigation}: any) => {
               id={product.id}
               title={product.title}
               price={product.price}
+              image={product.image}
               onPress={() => {}}
               onAddToCart={() => {}}
             />
@@ -375,12 +426,16 @@ const HomeScreen = ({navigation}: any) => {
 
         {/* 15. IMAGE WITH TEXT: Farm Visit */}
         <View style={styles.imageWithTextSection}>
-          <View style={styles.imageWithTextImage}>
-            <Text style={styles.imageWithTextEmoji}>🌾</Text>
-          </View>
+          <Image
+            source={{uri: getCdnImage('DSC_0253.JPG')}}
+            style={styles.imageWithTextImg}
+            resizeMode="cover"
+          />
           <View style={styles.imageWithTextContent}>
             <Text style={styles.imageWithTextTitle}>{specialSections.farmVisit.title}</Text>
-            <Text style={styles.imageWithTextDesc}>{specialSections.farmVisit.description}</Text>
+            <Text style={styles.imageWithTextDesc} numberOfLines={5}>
+              {specialSections.farmVisit.description}
+            </Text>
             <TouchableOpacity style={styles.imageWithTextButton}>
               <Text style={styles.imageWithTextButtonText}>{specialSections.farmVisit.buttonText}</Text>
             </TouchableOpacity>
@@ -395,26 +450,34 @@ const HomeScreen = ({navigation}: any) => {
           contentContainerStyle={styles.blogContainer}>
           {[1, 2, 3].map(i => (
             <TouchableOpacity key={i} style={styles.blogCard}>
-              <View style={styles.blogImage}>
-                <Text style={styles.blogEmoji}>📰</Text>
-              </View>
+              <Image
+                source={{uri: getCdnImage('DSC_0253.JPG')}}
+                style={styles.blogImage}
+                resizeMode="cover"
+              />
               <Text style={styles.blogTitle}>Organic Gardening Tips #{i}</Text>
               <Text style={styles.blogDate}>Dec 2024</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        {/* 17. GALLERY */}
+        {/* 17. GALLERY with actual images */}
         <SectionHeader title="Gallery" />
         <View style={styles.galleryGrid}>
-          {galleryImages.slice(0, 6).map((item, index) => (
+          {[
+            'SPIRU9.jpg',
+            'IMG-2097.png',
+            'DSC_0253.JPG',
+            'DSC_0192.JPG',
+            'IMG_1355.JPG',
+            'IMG-2097.png',
+          ].map((img, index) => (
             <TouchableOpacity key={index} style={styles.galleryItem}>
-              <View style={styles.galleryImagePlaceholder}>
-                <Text style={styles.galleryEmoji}>📷</Text>
-              </View>
-              {item.subtitle && (
-                <Text style={styles.galleryCaption}>{item.subtitle}</Text>
-              )}
+              <Image
+                source={{uri: getCdnImage(img)}}
+                style={styles.galleryImage}
+                resizeMode="cover"
+              />
             </TouchableOpacity>
           ))}
         </View>
@@ -429,30 +492,42 @@ const HomeScreen = ({navigation}: any) => {
         </TouchableOpacity>
 
         {/* 19. IMAGE WITH TEXT: Spirulina Training */}
-        <View style={styles.imageWithTextSection}>
+        <View style={[styles.imageWithTextSection, styles.imageWithTextReverse]}>
           <View style={styles.imageWithTextContent}>
             <Text style={styles.imageWithTextTitle}>{specialSections.spirulinaTraining.title}</Text>
-            <Text style={styles.imageWithTextDesc}>{specialSections.spirulinaTraining.description}</Text>
+            <Text style={styles.imageWithTextDesc} numberOfLines={5}>
+              {specialSections.spirulinaTraining.description}
+            </Text>
             <TouchableOpacity style={styles.imageWithTextButton}>
               <Text style={styles.imageWithTextButtonText}>{specialSections.spirulinaTraining.buttonText}</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.imageWithTextImage}>
-            <Text style={styles.imageWithTextEmoji}>🧪</Text>
-          </View>
+          <Image
+            source={{uri: getCdnImage('DSC_0237.JPG')}}
+            style={styles.imageWithTextImg}
+            resizeMode="cover"
+          />
         </View>
 
-        {/* 20. OUR BRANDS (Logo List) */}
+        {/* 20. OUR BRANDS with actual logos */}
         <SectionHeader title="Our Brands" />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.brandsContainer}>
-          {brands.map(brandItem => (
-            <TouchableOpacity key={brandItem.id} style={styles.brandCard}>
-              <View style={styles.brandLogo}>
-                <Text style={styles.brandLogoText}>{brandItem.name[0]}</Text>
-              </View>
+          {[
+            {name: 'Falcon', image: 'falcon.jpg'},
+            {name: 'SKOF', image: 'SKOF_new_logo_tm_9b6a7846-af4e-4def-ac18-8b7165eaf2b9.jpg'},
+            {name: 'Bellota', image: 'bellota_logo.jpg'},
+            {name: 'EPLA', image: 'EPLA-logo_802a7aba-6c86-4917-a3f7-6d457d52659c.jpeg'},
+            {name: 'BioCarve', image: 'biocurve.jpg'},
+          ].map((brandItem, index) => (
+            <TouchableOpacity key={index} style={styles.brandCard}>
+              <Image
+                source={{uri: getCdnImage(brandItem.image)}}
+                style={styles.brandLogo}
+                resizeMode="contain"
+              />
               <Text style={styles.brandName}>{brandItem.name}</Text>
             </TouchableOpacity>
           ))}
@@ -460,26 +535,40 @@ const HomeScreen = ({navigation}: any) => {
 
         {/* 21. MAP: Chennai Shop */}
         <View style={styles.mapSection}>
-          <Text style={styles.mapTitle}>📍 {brand.locations.chennaiShop.name}</Text>
-          <Text style={styles.mapAddress}>{brand.locations.chennaiShop.address}</Text>
-          <Text style={styles.mapHours}>{brand.locations.chennaiShop.hours}</Text>
-          <TouchableOpacity
-            style={styles.directionsButton}
-            onPress={() => openMaps(brand.locations.chennaiShop.address)}>
-            <Text style={styles.directionsButtonText}>Get Directions</Text>
-          </TouchableOpacity>
+          <Image
+            source={{uri: getCdnImage('holding-compass-up.jpg')}}
+            style={styles.mapImage}
+            resizeMode="cover"
+          />
+          <View style={styles.mapInfo}>
+            <Text style={styles.mapTitle}>📍 {brand.locations.chennaiShop.name}</Text>
+            <Text style={styles.mapAddress}>{brand.locations.chennaiShop.address}</Text>
+            <Text style={styles.mapHours}>{brand.locations.chennaiShop.hours}</Text>
+            <TouchableOpacity
+              style={styles.directionsButton}
+              onPress={() => openMaps(brand.locations.chennaiShop.address)}>
+              <Text style={styles.directionsButtonText}>Get Directions</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* 22. MAP: Farm & Outlet */}
         <View style={styles.mapSection}>
-          <Text style={styles.mapTitle}>📍 {brand.locations.farm.name}</Text>
-          <Text style={styles.mapAddress}>{brand.locations.farm.address}</Text>
-          <Text style={styles.mapHours}>{brand.locations.farm.hours}</Text>
-          <TouchableOpacity
-            style={styles.directionsButton}
-            onPress={() => openMaps(brand.locations.farm.address)}>
-            <Text style={styles.directionsButtonText}>Get Directions</Text>
-          </TouchableOpacity>
+          <Image
+            source={{uri: getCdnImage('open-compass-on-world-map.jpg')}}
+            style={styles.mapImage}
+            resizeMode="cover"
+          />
+          <View style={styles.mapInfo}>
+            <Text style={styles.mapTitle}>📍 {brand.locations.farm.name}</Text>
+            <Text style={styles.mapAddress}>{brand.locations.farm.address}</Text>
+            <Text style={styles.mapHours}>{brand.locations.farm.hours}</Text>
+            <TouchableOpacity
+              style={styles.directionsButton}
+              onPress={() => openMaps(brand.locations.farm.address)}>
+              <Text style={styles.directionsButtonText}>Get Directions</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* 23. NEWSLETTER */}
@@ -503,6 +592,11 @@ const HomeScreen = ({navigation}: any) => {
 
         {/* FOOTER */}
         <View style={styles.footer}>
+          <Image 
+            source={{uri: themeImages.logo}}
+            style={styles.footerLogoImg}
+            resizeMode="contain"
+          />
           <Text style={styles.footerLogo}>🌿 {brand.name}</Text>
           <Text style={styles.footerTagline}>{brand.tagline}</Text>
           
@@ -553,33 +647,37 @@ const styles = StyleSheet.create({
   },
   slide: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  slideImage: {
+    opacity: 0.9,
+  },
+  slideOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
     padding: 20,
+    paddingBottom: 40,
   },
   slideTitle: {
     fontSize: 28,
     fontWeight: 'bold',
     color: colors.textWhite,
     marginBottom: 8,
-    textAlign: 'center',
   },
   slideSubtitle: {
     fontSize: 14,
     color: colors.textWhite,
     opacity: 0.9,
-    textAlign: 'center',
     marginBottom: 16,
-    paddingHorizontal: 20,
   },
   slideButton: {
-    backgroundColor: colors.textWhite,
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 25,
+    alignSelf: 'flex-start',
   },
   slideButtonText: {
-    color: colors.primary,
+    color: colors.textWhite,
     fontWeight: '600',
   },
   pagination: {
@@ -599,11 +697,34 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textWhite,
     width: 24,
   },
+
+  // Promo Banner
+  promoBanner: {
+    backgroundColor: '#c41e3a', // Christmas red
+    padding: 16,
+    alignItems: 'center',
+  },
+  promoTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.textWhite,
+  },
+  promoText: {
+    fontSize: 14,
+    color: colors.textWhite,
+    marginTop: 4,
+  },
   
   // About
   aboutSection: {
     padding: 20,
     backgroundColor: colors.background,
+    alignItems: 'center',
+  },
+  aboutLogo: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
   },
   aboutTitle: {
     fontSize: 22,
@@ -652,16 +773,10 @@ const styles = StyleSheet.create({
   featuredProductCard: {
     flexDirection: 'row',
   },
-  featuredProductImage: {
+  featuredProductImg: {
     width: 120,
     height: 120,
-    backgroundColor: colors.background,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  featuredProductEmoji: {
-    fontSize: 48,
   },
   featuredProductInfo: {
     flex: 1,
@@ -701,19 +816,16 @@ const styles = StyleSheet.create({
   imageWithTextSection: {
     flexDirection: 'row',
     margin: 16,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     overflow: 'hidden',
   },
-  imageWithTextImage: {
-    width: '40%',
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 180,
+  imageWithTextReverse: {
+    flexDirection: 'row-reverse',
   },
-  imageWithTextEmoji: {
-    fontSize: 64,
+  imageWithTextImg: {
+    width: '40%',
+    minHeight: 180,
   },
   imageWithTextContent: {
     flex: 1,
@@ -763,12 +875,7 @@ const styles = StyleSheet.create({
   },
   blogImage: {
     height: 100,
-    backgroundColor: colors.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  blogEmoji: {
-    fontSize: 36,
+    width: '100%',
   },
   blogTitle: {
     fontSize: 14,
@@ -793,23 +900,14 @@ const styles = StyleSheet.create({
   },
   galleryItem: {
     width: (width - 36) / 3,
-    margin: 2,
-  },
-  galleryImagePlaceholder: {
     aspectRatio: 1,
-    backgroundColor: colors.backgroundSecondary,
+    margin: 2,
     borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
+    overflow: 'hidden',
   },
-  galleryEmoji: {
-    fontSize: 24,
-  },
-  galleryCaption: {
-    fontSize: 10,
-    color: colors.textLight,
-    textAlign: 'center',
-    marginTop: 4,
+  galleryImage: {
+    width: '100%',
+    height: '100%',
   },
   
   // Video
@@ -849,18 +947,11 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   brandLogo: {
-    width: 70,
-    height: 70,
+    width: 80,
+    height: 80,
     borderRadius: 8,
-    backgroundColor: colors.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.background,
     marginBottom: 8,
-  },
-  brandLogoText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.primary,
   },
   brandName: {
     fontSize: 12,
@@ -871,9 +962,16 @@ const styles = StyleSheet.create({
   // Map
   mapSection: {
     margin: 16,
-    padding: 16,
     backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
+    overflow: 'hidden',
+  },
+  mapImage: {
+    width: '100%',
+    height: 120,
+  },
+  mapInfo: {
+    padding: 16,
   },
   mapTitle: {
     fontSize: 16,
@@ -954,6 +1052,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     padding: 24,
     alignItems: 'center',
+  },
+  footerLogoImg: {
+    width: 80,
+    height: 80,
+    marginBottom: 12,
   },
   footerLogo: {
     fontSize: 20,
