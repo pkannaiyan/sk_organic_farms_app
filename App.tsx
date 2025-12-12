@@ -10,7 +10,21 @@ import CartScreen from './src/screens/CartScreen';
 import AccountScreen from './src/screens/AccountScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import CollectionDetailScreen from './src/screens/CollectionDetailScreen';
-import SeedsCollectionScreen from './src/screens/SeedsCollectionScreen';
+
+// Custom Collection Template Screens
+import {
+  SeedsScreen,
+  ManureScreen,
+  MilletsScreen,
+  PlantsScreen,
+  ToolsScreen,
+  PotsScreen,
+  SpirulinaScreen,
+  OffersScreen,
+  PackagesScreen,
+  GrowBagsScreen,
+} from './src/screens/collections';
+
 import {colors} from './src/constants/theme';
 
 const Tab = createBottomTabNavigator();
@@ -20,13 +34,23 @@ const TabIcon = ({icon, focused}: {icon: string; focused: boolean}) => (
   <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>{icon}</Text>
 );
 
-// Home Stack Navigator
+// Home Stack Navigator with all collection template screens
 const HomeStack = () => (
   <Stack.Navigator screenOptions={{headerShown: false}}>
     <Stack.Screen name="HomeMain" component={HomeScreen} />
     <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
     <Stack.Screen name="CollectionDetail" component={CollectionDetailScreen} />
-    <Stack.Screen name="SeedsCollection" component={SeedsCollectionScreen} />
+    {/* Custom Collection Template Screens */}
+    <Stack.Screen name="SeedsCollection" component={SeedsScreen} />
+    <Stack.Screen name="ManureCollection" component={ManureScreen} />
+    <Stack.Screen name="MilletsCollection" component={MilletsScreen} />
+    <Stack.Screen name="PlantsCollection" component={PlantsScreen} />
+    <Stack.Screen name="ToolsCollection" component={ToolsScreen} />
+    <Stack.Screen name="PotsCollection" component={PotsScreen} />
+    <Stack.Screen name="SpirulinaCollection" component={SpirulinaScreen} />
+    <Stack.Screen name="OffersCollection" component={OffersScreen} />
+    <Stack.Screen name="PackagesCollection" component={PackagesScreen} />
+    <Stack.Screen name="GrowBagsCollection" component={GrowBagsScreen} />
   </Stack.Navigator>
 );
 
@@ -36,6 +60,17 @@ const CollectionsStack = () => (
     <Stack.Screen name="CollectionsMain" component={CollectionsScreen} />
     <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
     <Stack.Screen name="CollectionDetail" component={CollectionDetailScreen} />
+    {/* Custom Collection Template Screens */}
+    <Stack.Screen name="SeedsCollection" component={SeedsScreen} />
+    <Stack.Screen name="ManureCollection" component={ManureScreen} />
+    <Stack.Screen name="MilletsCollection" component={MilletsScreen} />
+    <Stack.Screen name="PlantsCollection" component={PlantsScreen} />
+    <Stack.Screen name="ToolsCollection" component={ToolsScreen} />
+    <Stack.Screen name="PotsCollection" component={PotsScreen} />
+    <Stack.Screen name="SpirulinaCollection" component={SpirulinaScreen} />
+    <Stack.Screen name="OffersCollection" component={OffersScreen} />
+    <Stack.Screen name="PackagesCollection" component={PackagesScreen} />
+    <Stack.Screen name="GrowBagsCollection" component={GrowBagsScreen} />
   </Stack.Navigator>
 );
 

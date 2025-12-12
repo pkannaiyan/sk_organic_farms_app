@@ -34,18 +34,18 @@ const {width} = Dimensions.get('window');
 const FILES_CDN = 'https://cdn.shopify.com/s/files/1/0551/4417/files';
 const LOGO_IMAGE = `${FILES_CDN}/LogoColorTextBelow_3223832e-681f-41c8-9347-b0f342a6384a.jpg`;
 
-// Category pills (Blinkit style) - with custom template screens
+// Category pills (Blinkit style) - all with custom template screens from SK_Organic_Updated_Dec2025 theme
 const CATEGORY_PILLS = [
-  {emoji: '🌱', name: 'Seeds', handle: 'organic-seeds', color: '#4caf50', screen: 'SeedsCollection'},
-  {emoji: '🪴', name: 'Plants', handle: 'live-plants', color: '#8bc34a', screen: null},
-  {emoji: '🧪', name: 'Manure', handle: 'organic-manures', color: '#795548', screen: null},
-  {emoji: '🔧', name: 'Tools', handle: 'falcon-1', color: '#607d8b', screen: null},
-  {emoji: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', color: '#3f51b5', screen: null},
-  {emoji: '🏺', name: 'Pots', handle: 'planters', color: '#ff9800', screen: null},
-  {emoji: '🌾', name: 'Millets', handle: 'organic-millets-rice', color: '#ffc107', screen: null},
-  {emoji: '💚', name: 'Spirulina', handle: 'spirulina', color: '#009688', screen: null},
-  {emoji: '📦', name: 'Packages', handle: 'our-packages', color: '#9c27b0', screen: null},
-  {emoji: '🏷️', name: 'Offers', handle: 'daily-deals', color: '#f44336', screen: null},
+  {emoji: '🌱', name: 'Seeds', handle: 'organic-seeds', color: '#1B5E20', screen: 'SeedsCollection'},
+  {emoji: '🪴', name: 'Plants', handle: 'live-plants', color: '#2E7D32', screen: 'PlantsCollection'},
+  {emoji: '🧪', name: 'Manure', handle: 'organic-manures', color: '#5D4037', screen: 'ManureCollection'},
+  {emoji: '🔧', name: 'Tools', handle: 'falcon-1', color: '#37474F', screen: 'ToolsCollection'},
+  {emoji: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', color: '#1565C0', screen: 'GrowBagsCollection'},
+  {emoji: '🏺', name: 'Pots', handle: 'planters', color: '#BF360C', screen: 'PotsCollection'},
+  {emoji: '🌾', name: 'Millets', handle: 'organic-millets-rice', color: '#795548', screen: 'MilletsCollection'},
+  {emoji: '💚', name: 'Spirulina', handle: 'spirulina', color: '#0277BD', screen: 'SpirulinaCollection'},
+  {emoji: '📦', name: 'Packages', handle: 'our-packages', color: '#6A1B9A', screen: 'PackagesCollection'},
+  {emoji: '🏷️', name: 'Offers', handle: 'daily-deals', color: '#E65100', screen: 'OffersCollection'},
 ];
 
 // Hero slides
