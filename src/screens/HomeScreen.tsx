@@ -10,103 +10,44 @@ import {
   Linking,
   TextInput,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import Header from '../components/Header';
 import SectionHeader from '../components/SectionHeader';
-import CollectionCard from '../components/CollectionCard';
-import ProductCard from '../components/ProductCard';
+import {colors, brand, heroSlides, specialSections, newsletter} from '../constants/theme';
 import {
-  colors,
-  brand,
-  heroSlides,
-  collections,
-  specialSections,
-  newsletter,
-} from '../constants/theme';
-import {
-  heroImages,
-  categoryImages,
-  productImages,
-  brandImages,
-  galleryImages as galleryImgs,
-  mapImages,
-  logoImage,
-  specialImages,
-} from '../config/shopify';
+  fetchCollections,
+  fetchCollectionProducts,
+  ShopifyCollection,
+  ShopifyProduct,
+  getProductImage,
+  getProductPrice,
+  getCompareAtPrice,
+  isProductAvailable,
+} from '../services/shopifyApi';
 
 const {width} = Dimensions.get('window');
 
-// Products with images
-const allProducts = {
-  'organic-seeds': [
-    {id: '1', title: 'Native Tomato Seeds', price: 49, compareAtPrice: 69, image: productImages['organic-seeds'][0], description: 'High-quality organic tomato seeds for your kitchen garden.'},
-    {id: '2', title: 'Organic Chilli Seeds', price: 39, compareAtPrice: 59, image: productImages['organic-seeds'][1], description: 'Spicy organic chilli seeds, perfect for Indian cooking.'},
-    {id: '3', title: 'Brinjal Seeds Pack', price: 45, image: productImages['organic-seeds'][2], description: 'Premium brinjal seeds for healthy harvest.'},
-    {id: '4', title: 'Lady Finger Seeds', price: 35, image: productImages['organic-seeds'][3], description: 'Fresh lady finger seeds for your garden.'},
-    {id: '5', title: 'Coriander Seeds', price: 29, image: productImages['organic-seeds'][4], description: 'Aromatic coriander seeds for cooking and growing.'},
-  ],
-  'justbrews': [
-    {id: '6', title: 'Filter Coffee Powder', price: 299, image: productImages['justbrews'][0], description: 'Authentic South Indian filter coffee.'},
-    {id: '7', title: 'Green Tea Premium', price: 249, image: productImages['justbrews'][1], description: 'Premium green tea leaves.'},
-    {id: '8', title: 'Herbal Tea Mix', price: 199, image: productImages['justbrews'][2], description: 'Healthy herbal tea blend.'},
-  ],
-  'grow-bags': [
-    {id: '9', title: 'HDPE Grow Bag 15x15', price: 89, image: productImages['grow-bags'][0], description: 'Large HDPE grow bag for terrace garden.'},
-    {id: '10', title: 'HDPE Grow Bag 12x12', price: 69, image: productImages['grow-bags'][1], description: 'Medium HDPE grow bag.'},
-    {id: '11', title: 'Grow Bag Pack of 10', price: 399, compareAtPrice: 499, image: productImages['grow-bags'][2], description: 'Value pack of 10 grow bags.'},
-  ],
-  'daily-deals': [
-    {id: '12', title: 'Combo: Seeds + Manure', price: 599, compareAtPrice: 899, image: productImages['daily-deals'][0], description: 'Complete starter combo pack.'},
-    {id: '13', title: 'Garden Starter Kit', price: 1299, compareAtPrice: 1999, image: productImages['daily-deals'][1], description: 'Everything you need to start gardening.'},
-    {id: '14', title: 'Organic Manure 5kg', price: 249, compareAtPrice: 349, image: productImages['daily-deals'][2], description: 'Premium organic manure.'},
-  ],
-  'sea-weed-products': [
-    {id: '15', title: 'Seaweed Extract 1L', price: 449, compareAtPrice: 599, image: productImages['seaweed'][0], description: 'Concentrated seaweed extract.'},
-    {id: '16', title: 'Liquid Seaweed Spray', price: 299, image: productImages['seaweed'][1], description: 'Ready to use seaweed spray.'},
-  ],
-  'skin-and-hair-care': [
-    {id: '17', title: 'Organic Aloe Vera Gel', price: 199, image: productImages['skincare'][0], description: 'Pure organic aloe vera gel.'},
-    {id: '18', title: 'Herbal Hair Oil', price: 349, image: productImages['skincare'][1], description: 'Natural herbal hair oil.'},
-  ],
-  'live-plants': [
-    {id: '19', title: 'Lemongrass Plant', price: 149, image: productImages['plants'][0], description: 'Fresh lemongrass plant.'},
-    {id: '20', title: 'Tulsi Plant', price: 99, image: productImages['plants'][1], description: 'Holy basil plant.'},
-    {id: '21', title: 'Curry Leaves Plant', price: 179, image: productImages['plants'][2], description: 'Fresh curry leaves plant.'},
-  ],
-  'biocarve': [
-    {id: '22', title: 'BioCarve Tomato Seeds', price: 59, image: productImages['biocarve'][0], description: 'Premium BioCarve tomato seeds.'},
-    {id: '23', title: 'BioCarve Flower Mix', price: 89, image: productImages['biocarve'][1], description: 'Beautiful flower seed mix.'},
-  ],
-  'organic-millets-rice': [
-    {id: '24', title: 'Foxtail Millet 1kg', price: 149, image: productImages['millets'][0], description: 'Organic foxtail millet.'},
-    {id: '25', title: 'Little Millet 1kg', price: 169, image: productImages['millets'][1], description: 'Nutritious little millet.'},
-    {id: '26', title: 'Organic Brown Rice', price: 199, image: productImages['millets'][2], description: 'Healthy brown rice.'},
-  ],
-  'falcon-1': [
-    {id: '27', title: 'Falcon Hand Trowel', price: 299, image: productImages['tools'][0], description: 'Premium garden hand trowel.'},
-    {id: '28', title: 'Falcon Pruning Shears', price: 599, image: productImages['tools'][1], description: 'Sharp pruning shears.'},
-    {id: '29', title: 'Falcon Garden Fork', price: 449, image: productImages['tools'][2], description: 'Sturdy garden fork.'},
-  ],
-};
-
-// Collection images
-const collectionImageMap: {[key: string]: string} = {
-  'organic-manures': categoryImages.manures,
-  'organic-seeds': categoryImages.seeds,
-  'organic-millets-rice': categoryImages.millets,
-  'falcon-1': categoryImages.tools,
-  'grow-bags-for-terrace-garden': categoryImages.growBags,
-  'skin-and-hair-care': categoryImages.skincare,
-  'sea-weed-products': categoryImages.seaweed,
-  'our-packages': categoryImages.packages,
-  'potting-medium': categoryImages.potting,
-  'garden-sprayer': categoryImages.sprayer,
-  'live-plants': categoryImages.plants,
-};
+// Featured collection handles to display
+const FEATURED_HANDLES = [
+  'organic-seeds',
+  'organic-manure',
+  'grow-bags-for-terrace-garden',
+  'daily-deals',
+  'sea-weed-products',
+  'skin-and-hair-care',
+  'live-plants-and-samplings',
+  'biocarve',
+  'organic-millets-rice',
+  'falcon-1',
+];
 
 const HomeScreen = ({navigation}: any) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [email, setEmail] = useState('');
+  const [collections, setCollections] = useState<ShopifyCollection[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<{[key: string]: ShopifyProduct[]}>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -115,8 +56,51 @@ const HomeScreen = ({navigation}: any) => {
     return () => clearInterval(timer);
   }, []);
 
-  const navigateToProduct = (product: any) => {
-    navigation.navigate('ProductDetail', {product});
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      // Fetch all collections
+      const allCollections = await fetchCollections();
+      setCollections(allCollections);
+
+      // Fetch products for featured collections
+      const productsMap: {[key: string]: ShopifyProduct[]} = {};
+      
+      for (const handle of FEATURED_HANDLES) {
+        const products = await fetchCollectionProducts(handle, 10);
+        if (products.length > 0) {
+          productsMap[handle] = products;
+        }
+      }
+      
+      setFeaturedProducts(productsMap);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const navigateToProduct = (product: ShopifyProduct) => {
+    navigation.navigate('ProductDetail', {
+      product: {
+        id: product.id.toString(),
+        title: product.title,
+        price: getProductPrice(product),
+        compareAtPrice: getCompareAtPrice(product),
+        image: getProductImage(product),
+        images: product.images?.map(img => img.src) || [],
+        description: product.body_html?.replace(/<[^>]*>/g, '') || '',
+        inStock: isProductAvailable(product),
+      },
+    });
+  };
+
+  const navigateToCollection = (collection: ShopifyCollection) => {
+    navigation.navigate('CollectionDetail', {collection});
   };
 
   const openYouTube = () => {
@@ -124,53 +108,116 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   const openMaps = (address: string) => {
-    const url = `https://maps.google.com/?q=${encodeURIComponent(address)}`;
-    Linking.openURL(url);
+    Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent(address)}`);
   };
 
-  const renderProductSection = (categoryId: string, title: string, subtitle?: string) => {
-    const products = allProducts[categoryId as keyof typeof allProducts] || [];
+  const renderProductCard = (product: ShopifyProduct) => {
+    const price = getProductPrice(product);
+    const compareAtPrice = getCompareAtPrice(product);
+    const discount = compareAtPrice ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0;
+
     return (
-      <>
-        <SectionHeader title={title} subtitle={subtitle} showViewAll onViewAll={() => {}} />
+      <TouchableOpacity
+        key={product.id}
+        style={styles.productCard}
+        onPress={() => navigateToProduct(product)}>
+        <View style={styles.productImageContainer}>
+          <Image
+            source={{uri: getProductImage(product)}}
+            style={styles.productImage}
+            resizeMode="cover"
+          />
+          {discount > 0 && (
+            <View style={styles.discountBadge}>
+              <Text style={styles.discountText}>{discount}% OFF</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.productInfo}>
+          <Text style={styles.productTitle} numberOfLines={2}>{product.title}</Text>
+          <View style={styles.priceRow}>
+            <Text style={styles.productPrice}>₹{price}</Text>
+            {compareAtPrice && <Text style={styles.comparePrice}>₹{compareAtPrice}</Text>}
+          </View>
+          <TouchableOpacity style={styles.addButton}>
+            <Text style={styles.addButtonText}>Add to Cart</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderProductSection = (handle: string, title: string) => {
+    const products = featuredProducts[handle];
+    if (!products || products.length === 0) return null;
+
+    const collection = collections.find(c => c.handle === handle);
+
+    return (
+      <View key={handle}>
+        <SectionHeader
+          title={title}
+          showViewAll
+          onViewAll={() => collection && navigateToCollection(collection)}
+        />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.productsContainer}>
-          {products.map(product => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              title={product.title}
-              price={product.price}
-              compareAtPrice={product.compareAtPrice}
-              image={product.image}
-              onPress={() => navigateToProduct(product)}
-              onAddToCart={() => {}}
-            />
-          ))}
+          {products.slice(0, 8).map(renderProductCard)}
         </ScrollView>
-      </>
+      </View>
     );
   };
 
+  const renderCollectionCard = (collection: ShopifyCollection) => (
+    <TouchableOpacity
+      key={collection.id}
+      style={styles.collectionCard}
+      onPress={() => navigateToCollection(collection)}>
+      <View style={styles.collectionImageContainer}>
+        {collection.image ? (
+          <Image
+            source={{uri: collection.image.src}}
+            style={styles.collectionImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.collectionPlaceholder}>
+            <Text style={styles.collectionPlaceholderText}>📦</Text>
+          </View>
+        )}
+      </View>
+      <Text style={styles.collectionName} numberOfLines={2}>{collection.title}</Text>
+    </TouchableOpacity>
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Loading store...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Header cartCount={3} />
+      <Header cartCount={3} onMenuPress={() => navigation.navigate('Collections')} />
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         
-        {/* 1. HERO SLIDESHOW */}
+        {/* Hero Slideshow */}
         <View style={styles.sliderContainer}>
           <ImageBackground
-            source={{uri: heroImages[activeSlide]}}
+            source={{uri: collections[activeSlide % collections.length]?.image?.src || 'https://cdn.shopify.com/s/files/1/0551/4417/collections/biocarve-seeds.jpg'}}
             style={styles.slide}
             imageStyle={styles.slideImage}>
             <View style={styles.slideOverlay}>
-              <Text style={styles.slideTitle}>{heroSlides[activeSlide].title}</Text>
-              <Text style={styles.slideSubtitle}>{heroSlides[activeSlide].subtitle}</Text>
+              <Text style={styles.slideTitle}>{heroSlides[activeSlide % heroSlides.length].title}</Text>
+              <Text style={styles.slideSubtitle}>{heroSlides[activeSlide % heroSlides.length].subtitle}</Text>
               <TouchableOpacity style={styles.slideButton}>
-                <Text style={styles.slideButtonText}>{heroSlides[activeSlide].buttonText}</Text>
+                <Text style={styles.slideButtonText}>{heroSlides[activeSlide % heroSlides.length].buttonText}</Text>
               </TouchableOpacity>
             </View>
           </ImageBackground>
@@ -179,10 +226,7 @@ const HomeScreen = ({navigation}: any) => {
               <TouchableOpacity
                 key={index}
                 onPress={() => setActiveSlide(index)}
-                style={[
-                  styles.paginationDot,
-                  index === activeSlide && styles.paginationDotActive,
-                ]}
+                style={[styles.paginationDot, index === activeSlide && styles.paginationDotActive]}
               />
             ))}
           </View>
@@ -194,165 +238,119 @@ const HomeScreen = ({navigation}: any) => {
           <Text style={styles.promoText}>Use code AADI15 for Flat 15% OFF!</Text>
         </View>
 
-        {/* 2. ABOUT US */}
+        {/* About Us */}
         <View style={styles.aboutSection}>
-          <Image source={{uri: logoImage}} style={styles.aboutLogo} resizeMode="contain" />
           <Text style={styles.aboutTitle}>About Us</Text>
-          <Text style={styles.aboutPrevName}>Previously known as {brand.previousName}</Text>
+          <Text style={styles.aboutPrevName}>Previously: {brand.previousName}</Text>
           <Text style={styles.aboutText}>
-            Sunantha Organic Farm is an urban initiative founded by IT professionals 
-            to promote organic living. We support individuals in starting kitchen gardens, 
-            terrace gardens, and organic farms.
+            Sunantha Organic Farm promotes organic living with quality products, 
+            expert guidance, and sustainable practices for your garden.
           </Text>
         </View>
 
-        {/* Featured Collections */}
-        {renderProductSection('organic-seeds', 'Native Organic Seeds')}
-        {renderProductSection('justbrews', 'JustBrews', 'Coffee & Tea Powder')}
-        {renderProductSection('grow-bags', 'Grow Bags')}
+        {/* Featured Collections with Real Products */}
+        {renderProductSection('organic-seeds', '🌱 Organic Seeds')}
+        {renderProductSection('organic-manure', '🪴 Organic Manure')}
+        {renderProductSection('grow-bags-for-terrace-garden', '🛍️ Grow Bags')}
 
-        {/* Collection List */}
-        <SectionHeader title="Our Collection" />
+        {/* All Collections */}
+        <SectionHeader title="📦 All Collections" showViewAll onViewAll={() => navigation.navigate('Collections')} />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.collectionsContainer}>
-          {collections.map(collection => (
-            <CollectionCard
-              key={collection.id}
-              id={collection.id}
-              name={collection.title}
-              icon={collection.icon}
-              image={collectionImageMap[collection.id]}
-              onPress={() => {}}
-            />
-          ))}
+          {collections.slice(0, 15).map(renderCollectionCard)}
         </ScrollView>
 
-        {/* More Collections */}
-        {renderProductSection('daily-deals', 'Daily Deals')}
-        {renderProductSection('sea-weed-products', 'Sea Weed Products')}
-
-        {/* Featured Product */}
-        <View style={styles.featuredProductSection}>
-          <Text style={styles.featuredProductTitle}>Potting Soil</Text>
-          <TouchableOpacity 
-            style={styles.featuredProductCard}
-            onPress={() => navigateToProduct({
-              id: 'potting-soil',
-              title: 'Potting Mix - Premium Quality',
-              price: 299,
-              compareAtPrice: 399,
-              image: categoryImages.potting,
-              description: 'High-quality potting mix for all your plants.',
-            })}>
-            <Image source={{uri: categoryImages.potting}} style={styles.featuredProductImg} resizeMode="cover" />
-            <View style={styles.featuredProductInfo}>
-              <Text style={styles.featuredProductName}>Potting Mix - Premium Quality</Text>
-              <Text style={styles.featuredProductPrice}>₹299</Text>
-              <Text style={styles.featuredProductDesc}>Perfect for terrace gardens</Text>
-              <TouchableOpacity style={styles.featuredProductButton}>
-                <Text style={styles.featuredProductButtonText}>View Details</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {renderProductSection('skin-and-hair-care', 'Skin & Hair Care')}
-        {renderProductSection('live-plants', 'Live Plants & Saplings')}
-        {renderProductSection('biocarve', 'BioCarve Seeds')}
-        {renderProductSection('organic-millets-rice', 'Rice and Millets')}
-        {renderProductSection('falcon-1', 'Garden Tools')}
+        {/* More Featured Collections */}
+        {renderProductSection('daily-deals', '🏷️ Daily Deals')}
+        {renderProductSection('sea-weed-products', '🌊 Sea Weed Products')}
+        {renderProductSection('skin-and-hair-care', '💆 Skin & Hair Care')}
+        {renderProductSection('live-plants-and-samplings', '🌿 Live Plants')}
+        {renderProductSection('biocarve', '🌻 BioCarve Seeds')}
+        {renderProductSection('organic-millets-rice', '🌾 Rice & Millets')}
+        {renderProductSection('falcon-1', '🔧 Falcon Tools')}
 
         {/* Farm Visit */}
-        <View style={styles.imageWithTextSection}>
-          <Image source={{uri: specialImages.farmVisit}} style={styles.imageWithTextImg} resizeMode="cover" />
+        <TouchableOpacity 
+          style={styles.imageWithTextSection}
+          onPress={() => Linking.openURL('tel:' + brand.phone)}>
           <View style={styles.imageWithTextContent}>
-            <Text style={styles.imageWithTextTitle}>Farm Visit</Text>
-            <Text style={styles.imageWithTextDesc} numberOfLines={4}>
-              Visit our organic farm and learn traditional farming methods.
+            <Text style={styles.imageWithTextTitle}>🌾 Farm Visit</Text>
+            <Text style={styles.imageWithTextDesc}>
+              Visit our organic farm and learn traditional farming methods. Book now!
             </Text>
-            <TouchableOpacity style={styles.imageWithTextButton}>
-              <Text style={styles.imageWithTextButtonText}>Book Now</Text>
-            </TouchableOpacity>
+            <View style={styles.imageWithTextButton}>
+              <Text style={styles.imageWithTextButtonText}>Call to Book</Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
-        {/* Blog */}
-        <SectionHeader title="From The Blog" showViewAll onViewAll={() => {}} />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.blogContainer}>
-          {[specialImages.blog1, specialImages.blog2, specialImages.blog3].map((img, i) => (
-            <TouchableOpacity key={i} style={styles.blogCard}>
-              <Image source={{uri: img}} style={styles.blogImage} resizeMode="cover" />
-              <Text style={styles.blogTitle}>Gardening Tips #{i + 1}</Text>
-              <Text style={styles.blogDate}>Dec 2024</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Gallery */}
-        <SectionHeader title="Gallery" />
-        <View style={styles.galleryGrid}>
-          {galleryImgs.map((img, index) => (
-            <TouchableOpacity key={index} style={styles.galleryItem}>
-              <Image source={{uri: img}} style={styles.galleryImage} resizeMode="cover" />
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Video */}
+        {/* Video Section */}
         <TouchableOpacity style={styles.videoSection} onPress={openYouTube}>
           <Text style={styles.videoPlayIcon}>▶️</Text>
           <Text style={styles.videoTitle}>Watch: Interview with Director</Text>
           <Text style={styles.videoSubtitle}>How to identify fake organic products</Text>
         </TouchableOpacity>
 
-        {/* Spirulina */}
-        <View style={[styles.imageWithTextSection, styles.imageWithTextReverse]}>
-          <View style={styles.imageWithTextContent}>
-            <Text style={styles.imageWithTextTitle}>Spirulina Training</Text>
-            <Text style={styles.imageWithTextDesc} numberOfLines={4}>
-              Learn spirulina cultivation with our expert guidance.
-            </Text>
-            <TouchableOpacity style={styles.imageWithTextButton}>
-              <Text style={styles.imageWithTextButtonText}>Learn More</Text>
-            </TouchableOpacity>
-          </View>
-          <Image source={{uri: specialImages.spirulina}} style={styles.imageWithTextImg} resizeMode="cover" />
-        </View>
+        {/* Best Selling Products */}
+        <SectionHeader title="⭐ Best Sellers" showViewAll onViewAll={() => {
+          const bestSeller = collections.find(c => c.handle === 'best-seller');
+          if (bestSeller) navigateToCollection(bestSeller);
+        }} />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.collectionsContainer}>
+          {collections
+            .filter(c => ['best-seller', 'best-selling-products', 'combo-offer', 'bulk-sale'].includes(c.handle))
+            .map(renderCollectionCard)}
+        </ScrollView>
 
         {/* Brands */}
-        <SectionHeader title="Our Brands" />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.brandsContainer}>
-          {Object.entries(brandImages).map(([name, img]) => (
-            <TouchableOpacity key={name} style={styles.brandCard}>
-              <Image source={{uri: img}} style={styles.brandLogo} resizeMode="contain" />
-              <Text style={styles.brandName}>{name.charAt(0).toUpperCase() + name.slice(1)}</Text>
-            </TouchableOpacity>
-          ))}
+        <SectionHeader title="🏷️ Our Brands" />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.brandsContainer}>
+          {collections
+            .filter(c => ['falcon-1', 'bellota', 'biocarve', 'alpine'].includes(c.handle))
+            .map(collection => (
+              <TouchableOpacity
+                key={collection.id}
+                style={styles.brandCard}
+                onPress={() => navigateToCollection(collection)}>
+                {collection.image ? (
+                  <Image source={{uri: collection.image.src}} style={styles.brandLogo} resizeMode="contain" />
+                ) : (
+                  <View style={styles.brandPlaceholder}>
+                    <Text style={styles.brandPlaceholderText}>{collection.title[0]}</Text>
+                  </View>
+                )}
+                <Text style={styles.brandName}>{collection.title}</Text>
+              </TouchableOpacity>
+            ))}
         </ScrollView>
 
         {/* Maps */}
         <View style={styles.mapSection}>
-          <Image source={{uri: mapImages.chennai}} style={styles.mapImage} resizeMode="cover" />
-          <View style={styles.mapInfo}>
-            <Text style={styles.mapTitle}>📍 Chennai Shop</Text>
-            <Text style={styles.mapAddress}>{brand.locations.chennaiShop.address}</Text>
-            <TouchableOpacity style={styles.directionsButton} onPress={() => openMaps(brand.locations.chennaiShop.address)}>
-              <Text style={styles.directionsButtonText}>Get Directions</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.mapTitle}>📍 Chennai Shop</Text>
+          <Text style={styles.mapAddress}>{brand.locations.chennaiShop.address}</Text>
+          <TouchableOpacity 
+            style={styles.directionsButton} 
+            onPress={() => openMaps(brand.locations.chennaiShop.address)}>
+            <Text style={styles.directionsButtonText}>Get Directions</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.mapSection}>
-          <Image source={{uri: mapImages.farm}} style={styles.mapImage} resizeMode="cover" />
-          <View style={styles.mapInfo}>
-            <Text style={styles.mapTitle}>📍 Our Farm</Text>
-            <Text style={styles.mapAddress}>{brand.locations.farm.address}</Text>
-            <TouchableOpacity style={styles.directionsButton} onPress={() => openMaps(brand.locations.farm.address)}>
-              <Text style={styles.directionsButtonText}>Get Directions</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.mapTitle}>📍 Our Farm</Text>
+          <Text style={styles.mapAddress}>{brand.locations.farm.address}</Text>
+          <TouchableOpacity 
+            style={styles.directionsButton} 
+            onPress={() => openMaps(brand.locations.farm.address)}>
+            <Text style={styles.directionsButtonText}>Get Directions</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Newsletter */}
@@ -375,15 +373,19 @@ const HomeScreen = ({navigation}: any) => {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Image source={{uri: logoImage}} style={styles.footerLogoImg} resizeMode="contain" />
           <Text style={styles.footerLogo}>🌿 {brand.name}</Text>
-          <Text style={styles.footerContact}>📧 {brand.email} | 📞 {brand.phone}</Text>
+          <Text style={styles.footerContact}>📧 {brand.email}</Text>
+          <Text style={styles.footerContact}>📞 {brand.phone}</Text>
           <View style={styles.socialLinks}>
-            {['📘', '📸', '🐦'].map((icon, i) => (
-              <TouchableOpacity key={i} style={styles.socialButton}>
-                <Text style={styles.socialIcon}>{icon}</Text>
-              </TouchableOpacity>
-            ))}
+            <TouchableOpacity style={styles.socialButton} onPress={() => Linking.openURL(brand.social.facebook)}>
+              <Text style={styles.socialIcon}>📘</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialButton} onPress={() => Linking.openURL(brand.social.instagram)}>
+              <Text style={styles.socialIcon}>📸</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialButton} onPress={() => Linking.openURL(brand.social.youtube)}>
+              <Text style={styles.socialIcon}>📺</Text>
+            </TouchableOpacity>
           </View>
           <Text style={styles.footerCopyright}>© 2024 {brand.name}</Text>
         </View>
@@ -395,83 +397,103 @@ const HomeScreen = ({navigation}: any) => {
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: colors.background},
   content: {flex: 1},
-  sliderContainer: {height: 220, position: 'relative'},
+  loadingContainer: {flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background},
+  loadingText: {marginTop: 12, fontSize: 16, color: colors.textLight},
+  
+  // Slideshow
+  sliderContainer: {height: 200, position: 'relative'},
   slide: {flex: 1, justifyContent: 'flex-end'},
   slideImage: {opacity: 0.9},
-  slideOverlay: {backgroundColor: 'rgba(0,0,0,0.4)', padding: 20, paddingBottom: 40},
-  slideTitle: {fontSize: 28, fontWeight: 'bold', color: colors.textWhite, marginBottom: 8},
-  slideSubtitle: {fontSize: 14, color: colors.textWhite, opacity: 0.9, marginBottom: 16},
-  slideButton: {backgroundColor: colors.primary, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 25, alignSelf: 'flex-start'},
-  slideButtonText: {color: colors.textWhite, fontWeight: '600'},
-  pagination: {flexDirection: 'row', position: 'absolute', bottom: 16, alignSelf: 'center'},
-  paginationDot: {width: 8, height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.5)', marginHorizontal: 4},
-  paginationDotActive: {backgroundColor: colors.textWhite, width: 24},
-  promoBanner: {backgroundColor: '#c41e3a', padding: 16, alignItems: 'center'},
-  promoTitle: {fontSize: 18, fontWeight: 'bold', color: colors.textWhite},
-  promoText: {fontSize: 14, color: colors.textWhite, marginTop: 4},
-  aboutSection: {padding: 20, alignItems: 'center'},
-  aboutLogo: {width: 80, height: 80, marginBottom: 12},
-  aboutTitle: {fontSize: 22, fontWeight: 'bold', color: colors.primary, marginBottom: 8},
-  aboutPrevName: {fontSize: 12, color: colors.textLight, fontStyle: 'italic', marginBottom: 12},
-  aboutText: {fontSize: 14, color: colors.text, lineHeight: 22, textAlign: 'center'},
-  collectionsContainer: {paddingHorizontal: 16, paddingBottom: 20},
-  productsContainer: {paddingHorizontal: 16, paddingBottom: 20},
-  featuredProductSection: {margin: 16, backgroundColor: colors.backgroundSecondary, borderRadius: 12, padding: 16},
-  featuredProductTitle: {fontSize: 18, fontWeight: 'bold', color: colors.text, marginBottom: 12},
-  featuredProductCard: {flexDirection: 'row'},
-  featuredProductImg: {width: 120, height: 120, borderRadius: 8},
-  featuredProductInfo: {flex: 1, marginLeft: 16},
-  featuredProductName: {fontSize: 16, fontWeight: '600', color: colors.text},
-  featuredProductPrice: {fontSize: 20, fontWeight: 'bold', color: colors.primary, marginVertical: 4},
-  featuredProductDesc: {fontSize: 12, color: colors.textLight},
-  featuredProductButton: {backgroundColor: colors.primary, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 6, alignSelf: 'flex-start', marginTop: 8},
-  featuredProductButtonText: {color: colors.textWhite, fontWeight: '600', fontSize: 12},
-  imageWithTextSection: {flexDirection: 'row', margin: 16, backgroundColor: colors.backgroundSecondary, borderRadius: 12, overflow: 'hidden'},
-  imageWithTextReverse: {flexDirection: 'row-reverse'},
-  imageWithTextImg: {width: '40%', minHeight: 150},
-  imageWithTextContent: {flex: 1, padding: 16},
-  imageWithTextTitle: {fontSize: 18, fontWeight: 'bold', color: colors.headerPrimaryText, marginBottom: 8},
-  imageWithTextDesc: {fontSize: 12, color: colors.headerPrimaryText, lineHeight: 18, marginBottom: 12},
-  imageWithTextButton: {backgroundColor: colors.primary, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 6, alignSelf: 'flex-start'},
-  imageWithTextButtonText: {color: colors.textWhite, fontWeight: '600', fontSize: 12},
-  blogContainer: {paddingHorizontal: 16, paddingBottom: 20},
-  blogCard: {width: 180, marginRight: 12, backgroundColor: colors.background, borderRadius: 8, overflow: 'hidden', elevation: 2},
-  blogImage: {height: 100, width: '100%'},
-  blogTitle: {fontSize: 14, fontWeight: '500', color: colors.text, padding: 12, paddingBottom: 4},
-  blogDate: {fontSize: 12, color: colors.textLight, paddingHorizontal: 12, paddingBottom: 12},
-  galleryGrid: {flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12, paddingBottom: 20},
-  galleryItem: {width: (width - 36) / 3, aspectRatio: 1, margin: 2, borderRadius: 4, overflow: 'hidden'},
-  galleryImage: {width: '100%', height: '100%'},
-  videoSection: {margin: 16, backgroundColor: colors.headerPrimaryText, borderRadius: 12, padding: 24, alignItems: 'center'},
-  videoPlayIcon: {fontSize: 48, marginBottom: 12},
-  videoTitle: {fontSize: 18, fontWeight: 'bold', color: colors.textWhite, marginBottom: 4},
-  videoSubtitle: {fontSize: 14, color: colors.textWhite, opacity: 0.8},
-  brandsContainer: {paddingHorizontal: 16, paddingBottom: 20},
-  brandCard: {alignItems: 'center', marginRight: 20},
-  brandLogo: {width: 70, height: 70, borderRadius: 8, backgroundColor: colors.background, marginBottom: 8},
-  brandName: {fontSize: 12, color: colors.text, fontWeight: '500'},
-  mapSection: {margin: 16, backgroundColor: colors.backgroundSecondary, borderRadius: 12, overflow: 'hidden'},
-  mapImage: {width: '100%', height: 100},
-  mapInfo: {padding: 16},
-  mapTitle: {fontSize: 16, fontWeight: 'bold', color: colors.text, marginBottom: 8},
-  mapAddress: {fontSize: 14, color: colors.textLight, marginBottom: 12},
+  slideOverlay: {backgroundColor: 'rgba(0,0,0,0.5)', padding: 20, paddingBottom: 35},
+  slideTitle: {fontSize: 24, fontWeight: 'bold', color: colors.textWhite, marginBottom: 6},
+  slideSubtitle: {fontSize: 13, color: colors.textWhite, opacity: 0.9, marginBottom: 12},
+  slideButton: {backgroundColor: colors.primary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, alignSelf: 'flex-start'},
+  slideButtonText: {color: colors.textWhite, fontWeight: '600', fontSize: 13},
+  pagination: {flexDirection: 'row', position: 'absolute', bottom: 12, alignSelf: 'center'},
+  paginationDot: {width: 8, height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.5)', marginHorizontal: 3},
+  paginationDotActive: {backgroundColor: colors.textWhite, width: 20},
+
+  // Promo
+  promoBanner: {backgroundColor: '#c41e3a', padding: 14, alignItems: 'center'},
+  promoTitle: {fontSize: 16, fontWeight: 'bold', color: colors.textWhite},
+  promoText: {fontSize: 13, color: colors.textWhite, marginTop: 2},
+  
+  // About
+  aboutSection: {padding: 16, alignItems: 'center'},
+  aboutTitle: {fontSize: 20, fontWeight: 'bold', color: colors.primary, marginBottom: 4},
+  aboutPrevName: {fontSize: 11, color: colors.textLight, fontStyle: 'italic', marginBottom: 8},
+  aboutText: {fontSize: 13, color: colors.text, lineHeight: 20, textAlign: 'center'},
+  
+  // Products
+  productsContainer: {paddingHorizontal: 12, paddingBottom: 16},
+  productCard: {width: 150, backgroundColor: colors.background, borderRadius: 10, marginRight: 10, elevation: 2, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.1, shadowRadius: 3, overflow: 'hidden'},
+  productImageContainer: {width: '100%', height: 130, backgroundColor: colors.backgroundSecondary, position: 'relative'},
+  productImage: {width: '100%', height: '100%'},
+  discountBadge: {position: 'absolute', top: 6, left: 6, backgroundColor: colors.error, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 3},
+  discountText: {color: colors.textWhite, fontSize: 9, fontWeight: 'bold'},
+  productInfo: {padding: 10},
+  productTitle: {fontSize: 12, color: colors.text, fontWeight: '500', marginBottom: 6, height: 32},
+  priceRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 8},
+  productPrice: {fontSize: 14, fontWeight: 'bold', color: colors.primary},
+  comparePrice: {fontSize: 11, color: colors.textLight, textDecorationLine: 'line-through', marginLeft: 6},
+  addButton: {backgroundColor: colors.primary, paddingVertical: 6, borderRadius: 5, alignItems: 'center'},
+  addButtonText: {color: colors.textWhite, fontSize: 11, fontWeight: '600'},
+  
+  // Collections
+  collectionsContainer: {paddingHorizontal: 12, paddingBottom: 16},
+  collectionCard: {alignItems: 'center', width: 90, marginRight: 10},
+  collectionImageContainer: {width: 70, height: 70, borderRadius: 35, overflow: 'hidden', borderWidth: 2, borderColor: colors.primary, marginBottom: 6},
+  collectionImage: {width: '100%', height: '100%'},
+  collectionPlaceholder: {width: '100%', height: '100%', backgroundColor: colors.backgroundSecondary, justifyContent: 'center', alignItems: 'center'},
+  collectionPlaceholderText: {fontSize: 28},
+  collectionName: {fontSize: 11, color: colors.text, textAlign: 'center', fontWeight: '500'},
+  
+  // Image with Text
+  imageWithTextSection: {margin: 16, backgroundColor: colors.primary, borderRadius: 12, padding: 20},
+  imageWithTextContent: {alignItems: 'center'},
+  imageWithTextTitle: {fontSize: 20, fontWeight: 'bold', color: colors.textWhite, marginBottom: 8},
+  imageWithTextDesc: {fontSize: 13, color: colors.textWhite, textAlign: 'center', marginBottom: 12, lineHeight: 20},
+  imageWithTextButton: {backgroundColor: colors.textWhite, paddingVertical: 10, paddingHorizontal: 24, borderRadius: 20},
+  imageWithTextButtonText: {color: colors.primary, fontWeight: '600'},
+  
+  // Video
+  videoSection: {margin: 16, backgroundColor: '#1a1a2e', borderRadius: 12, padding: 24, alignItems: 'center'},
+  videoPlayIcon: {fontSize: 40, marginBottom: 10},
+  videoTitle: {fontSize: 16, fontWeight: 'bold', color: colors.textWhite, marginBottom: 4},
+  videoSubtitle: {fontSize: 12, color: colors.textWhite, opacity: 0.8},
+  
+  // Brands
+  brandsContainer: {paddingHorizontal: 12, paddingBottom: 16},
+  brandCard: {alignItems: 'center', marginRight: 16},
+  brandLogo: {width: 60, height: 60, borderRadius: 8, backgroundColor: colors.background},
+  brandPlaceholder: {width: 60, height: 60, borderRadius: 8, backgroundColor: colors.backgroundSecondary, justifyContent: 'center', alignItems: 'center'},
+  brandPlaceholderText: {fontSize: 24, fontWeight: 'bold', color: colors.primary},
+  brandName: {fontSize: 11, color: colors.text, marginTop: 6, fontWeight: '500'},
+  
+  // Map
+  mapSection: {margin: 16, backgroundColor: colors.backgroundSecondary, borderRadius: 12, padding: 16},
+  mapTitle: {fontSize: 16, fontWeight: 'bold', color: colors.text, marginBottom: 6},
+  mapAddress: {fontSize: 13, color: colors.textLight, marginBottom: 12, lineHeight: 20},
   directionsButton: {backgroundColor: colors.primary, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 6, alignSelf: 'flex-start'},
-  directionsButtonText: {color: colors.textWhite, fontWeight: '600', fontSize: 14},
-  newsletterSection: {backgroundColor: colors.footerBg, padding: 24, alignItems: 'center'},
-  newsletterTitle: {fontSize: 20, fontWeight: 'bold', color: colors.textWhite, marginBottom: 8},
-  newsletterSubtitle: {fontSize: 14, color: colors.textWhite, opacity: 0.9, marginBottom: 16, textAlign: 'center'},
+  directionsButtonText: {color: colors.textWhite, fontWeight: '600', fontSize: 13},
+  
+  // Newsletter
+  newsletterSection: {backgroundColor: colors.footerBg, padding: 20, alignItems: 'center'},
+  newsletterTitle: {fontSize: 18, fontWeight: 'bold', color: colors.textWhite, marginBottom: 6},
+  newsletterSubtitle: {fontSize: 13, color: colors.textWhite, opacity: 0.9, marginBottom: 14, textAlign: 'center'},
   newsletterForm: {flexDirection: 'row', width: '100%'},
-  newsletterInput: {flex: 1, backgroundColor: colors.textWhite, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, marginRight: 8},
-  newsletterButton: {backgroundColor: colors.headerPrimaryText, paddingHorizontal: 20, borderRadius: 8, justifyContent: 'center'},
+  newsletterInput: {flex: 1, backgroundColor: colors.textWhite, borderRadius: 6, paddingHorizontal: 14, paddingVertical: 10, marginRight: 8},
+  newsletterButton: {backgroundColor: colors.primary, paddingHorizontal: 18, borderRadius: 6, justifyContent: 'center'},
   newsletterButtonText: {color: colors.textWhite, fontWeight: '600'},
-  footer: {backgroundColor: colors.primary, padding: 24, alignItems: 'center'},
-  footerLogoImg: {width: 60, height: 60, marginBottom: 8},
-  footerLogo: {fontSize: 18, fontWeight: 'bold', color: colors.textWhite, marginBottom: 8},
-  footerContact: {fontSize: 14, color: colors.textWhite, marginBottom: 16},
-  socialLinks: {flexDirection: 'row', gap: 12, marginBottom: 16},
-  socialButton: {width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center'},
-  socialIcon: {fontSize: 20},
-  footerCopyright: {fontSize: 12, color: colors.textWhite, opacity: 0.8},
+  
+  // Footer
+  footer: {backgroundColor: colors.primary, padding: 20, alignItems: 'center'},
+  footerLogo: {fontSize: 18, fontWeight: 'bold', color: colors.textWhite, marginBottom: 10},
+  footerContact: {fontSize: 13, color: colors.textWhite, marginBottom: 4},
+  socialLinks: {flexDirection: 'row', gap: 10, marginVertical: 14},
+  socialButton: {width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center'},
+  socialIcon: {fontSize: 18},
+  footerCopyright: {fontSize: 11, color: colors.textWhite, opacity: 0.8},
 });
 
 export default HomeScreen;

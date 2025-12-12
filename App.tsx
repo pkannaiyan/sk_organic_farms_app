@@ -2,13 +2,14 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {View, Text, StyleSheet} from 'react-native';
+import {Text, StyleSheet} from 'react-native';
 
 import HomeScreen from './src/screens/HomeScreen';
 import CollectionsScreen from './src/screens/CollectionsScreen';
 import CartScreen from './src/screens/CartScreen';
 import AccountScreen from './src/screens/AccountScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
+import CollectionDetailScreen from './src/screens/CollectionDetailScreen';
 import {colors} from './src/constants/theme';
 
 const Tab = createBottomTabNavigator();
@@ -23,6 +24,7 @@ const HomeStack = () => (
   <Stack.Navigator screenOptions={{headerShown: false}}>
     <Stack.Screen name="HomeMain" component={HomeScreen} />
     <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+    <Stack.Screen name="CollectionDetail" component={CollectionDetailScreen} />
   </Stack.Navigator>
 );
 
@@ -31,6 +33,7 @@ const CollectionsStack = () => (
   <Stack.Navigator screenOptions={{headerShown: false}}>
     <Stack.Screen name="CollectionsMain" component={CollectionsScreen} />
     <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+    <Stack.Screen name="CollectionDetail" component={CollectionDetailScreen} />
   </Stack.Navigator>
 );
 
