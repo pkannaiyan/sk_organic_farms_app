@@ -1,18 +1,37 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {View, Text, StyleSheet} from 'react-native';
 
 import HomeScreen from './src/screens/HomeScreen';
 import CollectionsScreen from './src/screens/CollectionsScreen';
 import CartScreen from './src/screens/CartScreen';
 import AccountScreen from './src/screens/AccountScreen';
+import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import {colors} from './src/constants/theme';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 const TabIcon = ({icon, focused}: {icon: string; focused: boolean}) => (
   <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>{icon}</Text>
+);
+
+// Home Stack Navigator
+const HomeStack = () => (
+  <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Screen name="HomeMain" component={HomeScreen} />
+    <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+  </Stack.Navigator>
+);
+
+// Collections Stack Navigator
+const CollectionsStack = () => (
+  <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Screen name="CollectionsMain" component={CollectionsScreen} />
+    <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+  </Stack.Navigator>
 );
 
 const App = () => {
@@ -28,14 +47,14 @@ const App = () => {
         }}>
         <Tab.Screen
           name="Home"
-          component={HomeScreen}
+          component={HomeStack}
           options={{
             tabBarIcon: ({focused}) => <TabIcon icon="🏠" focused={focused} />,
           }}
         />
         <Tab.Screen
           name="Collections"
-          component={CollectionsScreen}
+          component={CollectionsStack}
           options={{
             tabBarIcon: ({focused}) => <TabIcon icon="📦" focused={focused} />,
           }}
