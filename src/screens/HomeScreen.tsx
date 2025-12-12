@@ -9,7 +9,6 @@ import {
   Image,
   Linking,
   TextInput,
-  ImageBackground,
   ActivityIndicator,
 } from 'react-native';
 import Header from '../components/Header';
@@ -51,7 +50,7 @@ const HomeScreen = ({navigation}: any) => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveSlide(prev => (prev + 1) % heroSlides.length);
+      setActiveSlide(prev => (prev + 1) % Math.max(heroSlides.length, 1));
     }, 7000);
     return () => clearInterval(timer);
   }, []);
@@ -62,20 +61,16 @@ const HomeScreen = ({navigation}: any) => {
 
   const loadData = async () => {
     try {
-      // Fetch all collections
       const allCollections = await fetchCollections();
       setCollections(allCollections);
 
-      // Fetch products for featured collections
       const productsMap: {[key: string]: ShopifyProduct[]} = {};
-      
       for (const handle of FEATURED_HANDLES) {
         const products = await fetchCollectionProducts(handle, 10);
         if (products.length > 0) {
           productsMap[handle] = products;
         }
       }
-      
       setFeaturedProducts(productsMap);
     } catch (error) {
       console.error('Error loading data:', error);
@@ -137,7 +132,7 @@ const HomeScreen = ({navigation}: any) => {
           <Text style={styles.productTitle} numberOfLines={2}>{product.title}</Text>
           <View style={styles.priceRow}>
             <Text style={styles.productPrice}>₹{price}</Text>
-            {compareAtPrice && <Text style={styles.comparePrice}>₹{compareAtPrice}</Text>}
+            {compareAtPrice ? <Text style={styles.comparePrice}>₹{compareAtPrice}</Text> : null}
           </View>
           <TouchableOpacity style={styles.addButton}>
             <Text style={styles.addButtonText}>Add to Cart</Text>
@@ -149,7 +144,9 @@ const HomeScreen = ({navigation}: any) => {
 
   const renderProductSection = (handle: string, title: string) => {
     const products = featuredProducts[handle];
-    if (!products || products.length === 0) return null;
+    if (!products || products.length === 0) {
+      return null;
+    }
 
     const collection = collections.find(c => c.handle === handle);
 
@@ -158,7 +155,11 @@ const HomeScreen = ({navigation}: any) => {
         <SectionHeader
           title={title}
           showViewAll
-          onViewAll={() => collection && navigateToCollection(collection)}
+          onViewAll={() => {
+            if (collection) {
+              navigateToCollection(collection);
+            }
+          }}
         />
         <ScrollView
           horizontal
@@ -170,27 +171,29 @@ const HomeScreen = ({navigation}: any) => {
     );
   };
 
-  const renderCollectionCard = (collection: ShopifyCollection) => (
-    <TouchableOpacity
-      key={collection.id}
-      style={styles.collectionCard}
-      onPress={() => navigateToCollection(collection)}>
-      <View style={styles.collectionImageContainer}>
-        {collection.image ? (
-          <Image
-            source={{uri: collection.image.src}}
-            style={styles.collectionImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={styles.collectionPlaceholder}>
-            <Text style={styles.collectionPlaceholderText}>📦</Text>
-          </View>
-        )}
-      </View>
-      <Text style={styles.collectionName} numberOfLines={2}>{collection.title}</Text>
-    </TouchableOpacity>
-  );
+  const renderCollectionCard = (collection: ShopifyCollection) => {
+    return (
+      <TouchableOpacity
+        key={collection.id}
+        style={styles.collectionCard}
+        onPress={() => navigateToCollection(collection)}>
+        <View style={styles.collectionImageContainer}>
+          {collection.image && collection.image.src ? (
+            <Image
+              source={{uri: collection.image.src}}
+              style={styles.collectionImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.collectionPlaceholder}>
+              <Text style={styles.collectionPlaceholderText}>📦</Text>
+            </View>
+          )}
+        </View>
+        <Text style={styles.collectionName} numberOfLines={2}>{collection.title}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -201,6 +204,8 @@ const HomeScreen = ({navigation}: any) => {
     );
   }
 
+  const currentSlide = heroSlides[activeSlide] || heroSlides[0];
+
   return (
     <View style={styles.container}>
       <Header cartCount={3} onMenuPress={() => navigation.navigate('Collections')} />
@@ -209,18 +214,13 @@ const HomeScreen = ({navigation}: any) => {
         
         {/* Hero Slideshow */}
         <View style={styles.sliderContainer}>
-          <ImageBackground
-            source={{uri: collections[activeSlide % collections.length]?.image?.src || 'https://cdn.shopify.com/s/files/1/0551/4417/collections/biocarve-seeds.jpg'}}
-            style={styles.slide}
-            imageStyle={styles.slideImage}>
-            <View style={styles.slideOverlay}>
-              <Text style={styles.slideTitle}>{heroSlides[activeSlide % heroSlides.length].title}</Text>
-              <Text style={styles.slideSubtitle}>{heroSlides[activeSlide % heroSlides.length].subtitle}</Text>
-              <TouchableOpacity style={styles.slideButton}>
-                <Text style={styles.slideButtonText}>{heroSlides[activeSlide % heroSlides.length].buttonText}</Text>
-              </TouchableOpacity>
-            </View>
-          </ImageBackground>
+          <View style={styles.slideOverlay}>
+            <Text style={styles.slideTitle}>{currentSlide.title}</Text>
+            <Text style={styles.slideSubtitle}>{currentSlide.subtitle}</Text>
+            <TouchableOpacity style={styles.slideButton}>
+              <Text style={styles.slideButtonText}>{currentSlide.buttonText}</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.pagination}>
             {heroSlides.map((_, index) => (
               <TouchableOpacity
@@ -243,8 +243,7 @@ const HomeScreen = ({navigation}: any) => {
           <Text style={styles.aboutTitle}>About Us</Text>
           <Text style={styles.aboutPrevName}>Previously: {brand.previousName}</Text>
           <Text style={styles.aboutText}>
-            Sunantha Organic Farm promotes organic living with quality products, 
-            expert guidance, and sustainable practices for your garden.
+            Sunantha Organic Farm promotes organic living with quality products, expert guidance, and sustainable practices for your garden.
           </Text>
         </View>
 
@@ -254,13 +253,17 @@ const HomeScreen = ({navigation}: any) => {
         {renderProductSection('grow-bags-for-terrace-garden', '🛍️ Grow Bags')}
 
         {/* All Collections */}
-        <SectionHeader title="📦 All Collections" showViewAll onViewAll={() => navigation.navigate('Collections')} />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.collectionsContainer}>
-          {collections.slice(0, 15).map(renderCollectionCard)}
-        </ScrollView>
+        {collections.length > 0 && (
+          <View>
+            <SectionHeader title="📦 All Collections" showViewAll onViewAll={() => navigation.navigate('Collections')} />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.collectionsContainer}>
+              {collections.slice(0, 15).map(renderCollectionCard)}
+            </ScrollView>
+          </View>
+        )}
 
         {/* More Featured Collections */}
         {renderProductSection('daily-deals', '🏷️ Daily Deals')}
@@ -293,44 +296,54 @@ const HomeScreen = ({navigation}: any) => {
           <Text style={styles.videoSubtitle}>How to identify fake organic products</Text>
         </TouchableOpacity>
 
-        {/* Best Selling Products */}
-        <SectionHeader title="⭐ Best Sellers" showViewAll onViewAll={() => {
-          const bestSeller = collections.find(c => c.handle === 'best-seller');
-          if (bestSeller) navigateToCollection(bestSeller);
-        }} />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.collectionsContainer}>
-          {collections
-            .filter(c => ['best-seller', 'best-selling-products', 'combo-offer', 'bulk-sale'].includes(c.handle))
-            .map(renderCollectionCard)}
-        </ScrollView>
+        {/* Best Selling Collections */}
+        {collections.length > 0 && (
+          <View>
+            <SectionHeader title="⭐ Best Sellers" showViewAll onViewAll={() => {
+              const bestSeller = collections.find(c => c.handle === 'best-seller');
+              if (bestSeller) {
+                navigateToCollection(bestSeller);
+              }
+            }} />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.collectionsContainer}>
+              {collections
+                .filter(c => ['best-seller', 'best-selling-products', 'combo-offer', 'bulk-sale'].includes(c.handle))
+                .map(renderCollectionCard)}
+            </ScrollView>
+          </View>
+        )}
 
         {/* Brands */}
-        <SectionHeader title="🏷️ Our Brands" />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.brandsContainer}>
-          {collections
-            .filter(c => ['falcon-1', 'bellota', 'biocarve', 'alpine'].includes(c.handle))
-            .map(collection => (
-              <TouchableOpacity
-                key={collection.id}
-                style={styles.brandCard}
-                onPress={() => navigateToCollection(collection)}>
-                {collection.image ? (
-                  <Image source={{uri: collection.image.src}} style={styles.brandLogo} resizeMode="contain" />
-                ) : (
-                  <View style={styles.brandPlaceholder}>
-                    <Text style={styles.brandPlaceholderText}>{collection.title[0]}</Text>
-                  </View>
-                )}
-                <Text style={styles.brandName}>{collection.title}</Text>
-              </TouchableOpacity>
-            ))}
-        </ScrollView>
+        {collections.length > 0 && (
+          <View>
+            <SectionHeader title="🏷️ Our Brands" />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.brandsContainer}>
+              {collections
+                .filter(c => ['falcon-1', 'bellota', 'biocarve', 'alpine'].includes(c.handle))
+                .map(collection => (
+                  <TouchableOpacity
+                    key={collection.id}
+                    style={styles.brandCard}
+                    onPress={() => navigateToCollection(collection)}>
+                    {collection.image && collection.image.src ? (
+                      <Image source={{uri: collection.image.src}} style={styles.brandLogo} resizeMode="contain" />
+                    ) : (
+                      <View style={styles.brandPlaceholder}>
+                        <Text style={styles.brandPlaceholderText}>{collection.title ? collection.title[0] : '?'}</Text>
+                      </View>
+                    )}
+                    <Text style={styles.brandName}>{collection.title}</Text>
+                  </TouchableOpacity>
+                ))}
+            </ScrollView>
+          </View>
+        )}
 
         {/* Maps */}
         <View style={styles.mapSection}>
@@ -401,14 +414,12 @@ const styles = StyleSheet.create({
   loadingText: {marginTop: 12, fontSize: 16, color: colors.textLight},
   
   // Slideshow
-  sliderContainer: {height: 200, position: 'relative'},
-  slide: {flex: 1, justifyContent: 'flex-end'},
-  slideImage: {opacity: 0.9},
-  slideOverlay: {backgroundColor: 'rgba(0,0,0,0.5)', padding: 20, paddingBottom: 35},
+  sliderContainer: {height: 180, position: 'relative', backgroundColor: colors.primary},
+  slideOverlay: {flex: 1, backgroundColor: 'rgba(25,135,84,0.9)', padding: 20, justifyContent: 'center'},
   slideTitle: {fontSize: 24, fontWeight: 'bold', color: colors.textWhite, marginBottom: 6},
   slideSubtitle: {fontSize: 13, color: colors.textWhite, opacity: 0.9, marginBottom: 12},
-  slideButton: {backgroundColor: colors.primary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, alignSelf: 'flex-start'},
-  slideButtonText: {color: colors.textWhite, fontWeight: '600', fontSize: 13},
+  slideButton: {backgroundColor: colors.textWhite, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, alignSelf: 'flex-start'},
+  slideButtonText: {color: colors.primary, fontWeight: '600', fontSize: 13},
   pagination: {flexDirection: 'row', position: 'absolute', bottom: 12, alignSelf: 'center'},
   paginationDot: {width: 8, height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.5)', marginHorizontal: 3},
   paginationDotActive: {backgroundColor: colors.textWhite, width: 20},
@@ -490,8 +501,8 @@ const styles = StyleSheet.create({
   footer: {backgroundColor: colors.primary, padding: 20, alignItems: 'center'},
   footerLogo: {fontSize: 18, fontWeight: 'bold', color: colors.textWhite, marginBottom: 10},
   footerContact: {fontSize: 13, color: colors.textWhite, marginBottom: 4},
-  socialLinks: {flexDirection: 'row', gap: 10, marginVertical: 14},
-  socialButton: {width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center'},
+  socialLinks: {flexDirection: 'row', marginVertical: 14},
+  socialButton: {width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center', marginHorizontal: 5},
   socialIcon: {fontSize: 18},
   footerCopyright: {fontSize: 11, color: colors.textWhite, opacity: 0.8},
 });
