@@ -1,12 +1,9 @@
 /**
- * HomeScreen - Optimized for Performance
- * - Parallel API calls
- * - Memoized components
- * - Optimized images
- * - Reduced re-renders
+ * HomeScreen - Optimized with Blinkit-style category pills
+ * Fixed: Scroll, Navigation, Performance
  */
 
-import React, {useState, useEffect, useCallback, useMemo, memo} from 'react';
+import React, {useState, useEffect, useCallback, memo} from 'react';
 import {
   View,
   ScrollView,
@@ -21,7 +18,7 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import {colors, brand, newsletter} from '../constants/theme';
+import {colors, brand} from '../constants/theme';
 import {
   fetchCollections,
   fetchCollectionProducts,
@@ -37,63 +34,32 @@ const {width} = Dimensions.get('window');
 const FILES_CDN = 'https://cdn.shopify.com/s/files/1/0551/4417/files';
 const LOGO_IMAGE = `${FILES_CDN}/LogoColorTextBelow_3223832e-681f-41c8-9347-b0f342a6384a.jpg`;
 
-// Helper to get optimized image URL (smaller size)
-const getOptimizedImage = (url: string, size: number = 200) => {
-  if (!url) return url;
-  if (url.includes('cdn.shopify.com')) {
-    // Shopify image optimization
-    return url.replace(/\.([^.]+)$/, `_${size}x.$1`);
-  }
-  return url;
-};
-
-// Category pills bar (Blinkit style)
+// Category pills with correct Shopify collection handles
 const CATEGORY_PILLS = [
-  {icon: '📋', name: 'All Products', handle: 'all', isActive: true, isOffer: false},
-  {icon: '🌱', name: 'Seeds', handle: 'organic-seeds', isActive: false, isOffer: false},
-  {icon: '🪴', name: 'Plants', handle: 'live-plants', isActive: false, isOffer: false},
-  {icon: '🌿', name: 'Organic Manure', handle: 'organic-manures', isActive: false, isOffer: false},
-  {icon: '🔧', name: 'Tools', handle: 'falcon-1', isActive: false, isOffer: false},
-  {icon: '🏺', name: 'Pots', handle: 'garden-sprayer', isActive: false, isOffer: false},
-  {icon: '🌾', name: 'Millets', handle: 'organic-millets-rice', isActive: false, isOffer: false},
-  {icon: '💚', name: 'Spirulina', handle: 'spirulina', isActive: false, isOffer: false},
-  {icon: '🏆', name: 'Brands', handle: 'brands', isActive: false, isOffer: false},
-  {icon: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', isActive: false, isOffer: false},
-  {icon: '📦', name: 'Packages', handle: 'our-packages', isActive: false, isOffer: false},
-  {icon: '🧴', name: 'Skin Care', handle: 'skin-and-hair-care', isActive: false, isOffer: false},
-  {icon: '🌊', name: 'Sea Weed', handle: 'sea-weed-products', isActive: false, isOffer: false},
-  {icon: '🏷️', name: 'Offers', handle: 'daily-deals', isActive: false, isOffer: true},
-];
-
-// Shop by Category
-const CATEGORIES = [
-  {emoji: '🌱', name: 'Seeds', handle: 'organic-seeds'},
-  {emoji: '🪴', name: 'Plants', handle: 'live-plants'},
-  {emoji: '🧪', name: 'Manure', handle: 'organic-manures'},
-  {emoji: '🔧', name: 'Tools', handle: 'falcon-1'},
-  {emoji: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden'},
-  {emoji: '🏺', name: 'Pots', handle: 'garden-sprayer'},
-  {emoji: '🌾', name: 'Millets', handle: 'organic-millets-rice'},
-  {emoji: '💚', name: 'Spirulina', handle: 'spirulina'},
-  {emoji: '📦', name: 'Packages', handle: 'our-packages'},
-  {emoji: '🏷️', name: 'Offers', handle: 'daily-deals'},
-];
-
-// Quick badges
-const QUICK_BADGES = [
-  {icon: '🏷️', title: 'Daily Deals', subtitle: 'Up to 50% off'},
-  {icon: '🚚', title: 'Free Delivery', subtitle: 'On orders ₹500+'},
-  {icon: '🎁', title: 'Combo Offers', subtitle: 'Save on bundles'},
+  {icon: '📋', name: 'All Products', handle: 'all-products', type: 'all'},
+  {icon: '🌱', name: 'Seeds', handle: 'organic-seeds', type: 'collection'},
+  {icon: '🪴', name: 'Plants', handle: 'live-plants', type: 'collection'},
+  {icon: '🌿', name: 'Organic Manure', handle: 'organic-manures', type: 'collection'},
+  {icon: '🔧', name: 'Tools', handle: 'falcon-1', type: 'collection'},
+  {icon: '🏺', name: 'Pots', handle: 'planters', type: 'collection'},
+  {icon: '🌾', name: 'Millets', handle: 'organic-millets-rice', type: 'collection'},
+  {icon: '💚', name: 'Spirulina', handle: 'spirulina', type: 'collection'},
+  {icon: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', type: 'collection'},
+  {icon: '📦', name: 'Packages', handle: 'our-packages', type: 'collection'},
+  {icon: '🧴', name: 'Skin Care', handle: 'skin-and-hair-care', type: 'collection'},
+  {icon: '🌊', name: 'Sea Weed', handle: 'sea-weed-products', type: 'collection'},
+  {icon: '🏆', name: 'Brands', handle: 'brands', type: 'brands'},
+  {icon: '🏷️', name: 'Offers', handle: 'daily-deals', type: 'offer'},
 ];
 
 // Hero slides
 const HERO_SLIDES = [
-  {image: `${FILES_CDN}/IMG_2100.png`, badge: 'Farm to Your Doorstep', title: 'Fresh Organic Products', subtitle: '100% Natural • Certified Organic', button: 'Shop Now', link: 'organic-manures'},
-  {image: `${FILES_CDN}/IMG_2099.png`, badge: 'Grow Your Own Garden', title: 'Native Organic Seeds', subtitle: 'Vegetable, Flower, Tree Seeds', button: 'Shop Seeds', link: 'organic-seeds'},
-  {image: `${FILES_CDN}/IMG_2101.png`, badge: 'We Help You Start', title: 'Garden Setup Services', subtitle: 'Shade House & Terrace Garden', button: 'Get Started', link: 'our-packages'},
+  {image: `${FILES_CDN}/IMG_2100.png`, title: 'Fresh Organic Products', subtitle: '100% Natural • Certified Organic', button: 'Shop Now', link: 'organic-manures'},
+  {image: `${FILES_CDN}/IMG_2099.png`, title: 'Native Organic Seeds', subtitle: 'Vegetable, Flower & Herb Seeds', button: 'Shop Seeds', link: 'organic-seeds'},
+  {image: `${FILES_CDN}/IMG_2101.png`, title: 'Garden Setup Services', subtitle: 'Shade House & Terrace Garden', button: 'Get Started', link: 'our-packages'},
 ];
 
-// Product sections - reduced to 3 for faster loading
+// Product sections
 const PRODUCT_SECTIONS = [
   {handle: 'daily-deals', title: '🔥 Today\'s Deals', subtitle: 'Limited time offers'},
   {handle: 'organic-seeds', title: '🌱 Organic Seeds', subtitle: 'Native varieties'},
@@ -102,33 +68,31 @@ const PRODUCT_SECTIONS = [
 
 // Trust badges
 const TRUST_BADGES = [
-  {emoji: '🌱', title: '100% Organic', subtitle: 'Chemical-free products'},
-  {emoji: '🚚', title: 'Fast Delivery', subtitle: 'Same day dispatch'},
-  {emoji: '💬', title: 'Expert Support', subtitle: 'Free guidance'},
-  {emoji: '💰', title: 'Best Prices', subtitle: 'Great value'},
+  {emoji: '🌱', title: '100% Organic'},
+  {emoji: '🚚', title: 'Fast Delivery'},
+  {emoji: '💬', title: 'Expert Support'},
+  {emoji: '💰', title: 'Best Prices'},
 ];
 
-// Brand logos
-const BRAND_LOGOS = [
-  {name: 'Falcon', image: `${FILES_CDN}/falcon.jpg`, link: 'falcon-1'},
-  {name: 'SKOF', image: `${FILES_CDN}/SKOF_new_logo_tm_9b6a7846-af4e-4def-ac18-8b7165eaf2b9.jpg`, link: ''},
-  {name: 'Bellota', image: `${FILES_CDN}/bellota_logo.jpg`, link: 'bellota'},
-  {name: 'BioCarve', image: `${FILES_CDN}/biocurve.jpg`, link: 'biocarve'},
-];
+// Optimized image URL
+const getOptimizedImage = (url: string, size: number = 200) => {
+  if (!url) return url;
+  if (url.includes('cdn.shopify.com') && !url.includes('_')) {
+    return url.replace(/\.([^.]+)$/, `_${size}x.$1`);
+  }
+  return url;
+};
 
-// ========== MEMOIZED COMPONENTS ==========
-
-// Memoized Product Card
+// Product Card Component
 const ProductCard = memo(({product, onPress}: {product: ShopifyProduct; onPress: () => void}) => {
   const price = getProductPrice(product);
   const compareAtPrice = getCompareAtPrice(product);
   const discount = compareAtPrice ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0;
-  const imageUrl = getOptimizedImage(getProductImage(product), 150);
 
   return (
     <TouchableOpacity style={styles.productCard} onPress={onPress} activeOpacity={0.8}>
       <View style={styles.productImageWrap}>
-        <Image source={{uri: imageUrl}} style={styles.productImage} resizeMode="cover" />
+        <Image source={{uri: getOptimizedImage(getProductImage(product), 150)}} style={styles.productImage} resizeMode="cover" />
         {discount > 0 && <View style={styles.saleBadge}><Text style={styles.saleBadgeText}>{discount}%</Text></View>}
       </View>
       <View style={styles.productInfo}>
@@ -143,18 +107,7 @@ const ProductCard = memo(({product, onPress}: {product: ShopifyProduct; onPress:
   );
 });
 
-// Memoized Category Pill
-const CategoryPill = memo(({cat, onPress}: {cat: typeof CATEGORY_PILLS[0]; onPress: () => void}) => (
-  <TouchableOpacity 
-    style={[styles.categoryPill, cat.isActive && styles.categoryPillActive, cat.isOffer && styles.categoryPillOffer]} 
-    onPress={onPress}
-    activeOpacity={0.7}>
-    <Text style={[styles.categoryPillIcon, cat.isActive && styles.categoryPillIconActive, cat.isOffer && styles.categoryPillIconOffer]}>{cat.icon}</Text>
-    <Text style={[styles.categoryPillText, cat.isActive && styles.categoryPillTextActive, cat.isOffer && styles.categoryPillTextOffer]} numberOfLines={1}>{cat.name}</Text>
-  </TouchableOpacity>
-));
-
-// Memoized Countdown Timer (isolated to prevent full re-render)
+// Countdown Timer Component (isolated)
 const CountdownTimer = memo(() => {
   const [countdown, setCountdown] = useState({hours: 8, mins: 45, secs: 30});
 
@@ -174,26 +127,27 @@ const CountdownTimer = memo(() => {
 
   return (
     <View style={styles.flashCountdown}>
-      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.hours).padStart(2, '0')}</Text><Text style={styles.countdownLabel}>Hrs</Text></View>
-      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.mins).padStart(2, '0')}</Text><Text style={styles.countdownLabel}>Min</Text></View>
-      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.secs).padStart(2, '0')}</Text><Text style={styles.countdownLabel}>Sec</Text></View>
+      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.hours).padStart(2, '0')}</Text></View>
+      <Text style={styles.countdownSep}>:</Text>
+      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.mins).padStart(2, '0')}</Text></View>
+      <Text style={styles.countdownSep}>:</Text>
+      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.secs).padStart(2, '0')}</Text></View>
     </View>
   );
 });
 
-// ========== MAIN COMPONENT ==========
-
+// Main Component
 const HomeScreen = ({navigation}: any) => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [activePill, setActivePill] = useState(0);
   const [email, setEmail] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [collections, setCollections] = useState<ShopifyCollection[]>([]);
   const [sectionProducts, setSectionProducts] = useState<{[key: string]: ShopifyProduct[]}>({});
   const [loading, setLoading] = useState(true);
-  const [searchResults, setSearchResults] = useState<ShopifyProduct[]>([]);
   const [isListening, setIsListening] = useState(false);
 
-  // Auto-rotate slides (slower interval)
+  // Auto-rotate slides
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveSlide(prev => (prev + 1) % HERO_SLIDES.length);
@@ -201,21 +155,17 @@ const HomeScreen = ({navigation}: any) => {
     return () => clearInterval(timer);
   }, []);
 
-  // Load data with PARALLEL API calls
+  // Load data with parallel API calls
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Fetch collections and all products in PARALLEL
         const [allCollections, ...productResults] = await Promise.all([
           fetchCollections(),
-          ...PRODUCT_SECTIONS.map(section => 
-            fetchCollectionProducts(section.handle, 6) // Reduced to 6 products per section
-          )
+          ...PRODUCT_SECTIONS.map(section => fetchCollectionProducts(section.handle, 6))
         ]);
 
         setCollections(allCollections);
-
-        // Map products to sections
+        
         const productsMap: {[key: string]: ShopifyProduct[]} = {};
         PRODUCT_SECTIONS.forEach((section, index) => {
           if (productResults[index]?.length > 0) {
@@ -232,19 +182,7 @@ const HomeScreen = ({navigation}: any) => {
     loadData();
   }, []);
 
-  // Memoized search handler
-  const handleSearch = useCallback((text: string) => {
-    setSearchQuery(text);
-    if (text.length > 2) {
-      const allProducts = Object.values(sectionProducts).flat();
-      const results = allProducts.filter(p => p.title.toLowerCase().includes(text.toLowerCase()));
-      setSearchResults(results.slice(0, 5));
-    } else {
-      setSearchResults([]);
-    }
-  }, [sectionProducts]);
-
-  // Memoized navigation handlers
+  // Navigate to product
   const navigateToProduct = useCallback((product: ShopifyProduct) => {
     navigation.navigate('ProductDetail', {
       product: {
@@ -261,15 +199,32 @@ const HomeScreen = ({navigation}: any) => {
     });
   }, [navigation]);
 
+  // Navigate to collection
   const navigateToCollection = useCallback((handle: string) => {
     const collection = collections.find(c => c.handle === handle);
     if (collection) {
       navigation.navigate('CollectionDetail', {collection});
+    } else {
+      // If collection not found, navigate to Collections screen
+      navigation.navigate('Collections');
     }
   }, [collections, navigation]);
 
-  // Memoized product renderer for FlatList
-  const renderProduct = useCallback(({item, index}: {item: ShopifyProduct; index: number}) => (
+  // Handle category pill press
+  const handlePillPress = useCallback((index: number, pill: typeof CATEGORY_PILLS[0]) => {
+    setActivePill(index);
+    
+    if (pill.type === 'all') {
+      navigation.navigate('Collections');
+    } else if (pill.type === 'brands') {
+      navigation.navigate('Collections'); // Navigate to brands page
+    } else {
+      navigateToCollection(pill.handle);
+    }
+  }, [navigation, navigateToCollection]);
+
+  // Render product
+  const renderProduct = useCallback(({item}: {item: ShopifyProduct}) => (
     <ProductCard product={item} onPress={() => navigateToProduct(item)} />
   ), [navigateToProduct]);
 
@@ -289,66 +244,121 @@ const HomeScreen = ({navigation}: any) => {
     <View style={styles.container}>
       {/* Christmas Banner */}
       <View style={styles.christmasBanner}>
-        <Text style={styles.christmasText}>🎄 Christmas Special! <Text style={styles.christmasBold}>25% OFF</Text> Code: <Text style={styles.christmasCode}>XMAS2024</Text></Text>
+        <Text style={styles.christmasText}>
+          <Text>🎄 Christmas Special! </Text>
+          <Text style={styles.christmasBold}>25% OFF</Text>
+          <Text> Code: </Text>
+          <Text style={styles.christmasCode}>XMAS2024</Text>
+        </Text>
       </View>
 
       {/* Header */}
       <View style={styles.header}>
+        {/* Logo and Location Row */}
         <View style={styles.topBar}>
           <Image source={{uri: LOGO_IMAGE}} style={styles.headerLogo} resizeMode="contain" />
           <View style={styles.locationRight}>
-            <Text style={styles.locationText}>📍 <Text style={styles.locationBold}>Chennai</Text></Text>
+            <Text style={styles.locationText}>
+              <Text>📍 </Text>
+              <Text style={styles.locationBold}>Chennai</Text>
+            </Text>
           </View>
         </View>
 
-        {/* Category Pills */}
-        <View style={styles.categoryPillsWrapper}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} bounces decelerationRate="fast" contentContainerStyle={styles.categoryPillsContainer}>
-            {CATEGORY_PILLS.map((cat, i) => (
-              <CategoryPill key={i} cat={cat} onPress={() => cat.handle === 'all' ? navigation.navigate('Collections') : navigateToCollection(cat.handle)} />
-            ))}
-          </ScrollView>
+        {/* Category Pills - Horizontal Scroll */}
+        <View style={styles.categoryPillsContainer}>
+          <FlatList
+            horizontal={true}
+            data={CATEGORY_PILLS}
+            keyExtractor={(item, index) => `pill-${index}`}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryPillsContent}
+            renderItem={({item, index}) => (
+              <TouchableOpacity
+                style={[
+                  styles.categoryPill,
+                  index === activePill && styles.categoryPillActive,
+                  item.type === 'offer' && styles.categoryPillOffer,
+                ]}
+                onPress={() => handlePillPress(index, item)}
+                activeOpacity={0.7}
+              >
+                <Text style={[
+                  styles.categoryPillIcon,
+                  index === activePill && styles.categoryPillIconActive,
+                  item.type === 'offer' && styles.categoryPillIconOffer,
+                ]}>{item.icon}</Text>
+                <Text 
+                  style={[
+                    styles.categoryPillText,
+                    index === activePill && styles.categoryPillTextActive,
+                    item.type === 'offer' && styles.categoryPillTextOffer,
+                  ]} 
+                  numberOfLines={1}
+                >{item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
         </View>
 
-        {/* Search */}
+        {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchWrap}>
-            <Text>🔍</Text>
-            <TextInput style={styles.searchInput} placeholder="Search..." placeholderTextColor="#888" value={searchQuery} onChangeText={handleSearch} />
-            <TouchableOpacity onPress={() => setIsListening(true)}><Text>{isListening ? '🔴' : '🎤'}</Text></TouchableOpacity>
+            <Text style={styles.searchIconText}>🔍</Text>
+            <TextInput 
+              style={styles.searchInput} 
+              placeholder="Search products..." 
+              placeholderTextColor="#888" 
+              value={searchQuery} 
+              onChangeText={setSearchQuery} 
+            />
+            <TouchableOpacity onPress={() => setIsListening(true)} style={styles.voiceBtn}>
+              <Text style={styles.voiceIcon}>{isListening ? '🔴' : '🎤'}</Text>
+            </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.cartBtn} onPress={() => navigation.navigate('Cart')}>
-            <Text style={styles.cartIcon}>🛒</Text>
+            <Text style={styles.cartIconText}>🛒</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} removeClippedSubviews={true}>
+      {/* Main Content */}
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Hero Slideshow */}
         <View style={styles.heroSection}>
-          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
-            {HERO_SLIDES.map((slide, i) => (
-              <TouchableOpacity key={i} style={styles.heroSlide} onPress={() => navigateToCollection(slide.link)} activeOpacity={0.9}>
-                <Image source={{uri: slide.image}} style={styles.heroImage} resizeMode="cover" />
+          <FlatList
+            horizontal={true}
+            pagingEnabled={true}
+            data={HERO_SLIDES}
+            keyExtractor={(item, index) => `slide-${index}`}
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={(e) => setActiveSlide(Math.round(e.nativeEvent.contentOffset.x / width))}
+            renderItem={({item}) => (
+              <TouchableOpacity style={styles.heroSlide} onPress={() => navigateToCollection(item.link)} activeOpacity={0.9}>
+                <Image source={{uri: item.image}} style={styles.heroImage} resizeMode="cover" />
                 <View style={styles.heroOverlay}>
-                  <Text style={styles.heroTitle}>{slide.title}</Text>
-                  <Text style={styles.heroSubtitle}>{slide.subtitle}</Text>
-                  <View style={styles.heroBtn}><Text style={styles.heroBtnText}>{slide.button}</Text></View>
+                  <Text style={styles.heroTitle}>{item.title}</Text>
+                  <Text style={styles.heroSubtitle}>{item.subtitle}</Text>
+                  <View style={styles.heroBtn}>
+                    <Text style={styles.heroBtnText}>{item.button}</Text>
+                  </View>
                 </View>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
+            )}
+          />
           <View style={styles.heroDots}>
-            {HERO_SLIDES.map((_, i) => <View key={i} style={[styles.heroDot, i === activeSlide && styles.heroDotActive]} />)}
+            {HERO_SLIDES.map((_, i) => (
+              <View key={i} style={[styles.heroDot, i === activeSlide && styles.heroDotActive]} />
+            ))}
           </View>
         </View>
 
-        {/* Flash Sale with isolated countdown */}
+        {/* Flash Sale */}
         <View style={styles.flashSale}>
           <Text style={styles.flashIcon}>⚡</Text>
           <View style={styles.flashInfo}>
             <Text style={styles.flashTitle}>Flash Sale!</Text>
-            <Text style={styles.flashSub}>Grab deals now</Text>
+            <Text style={styles.flashSub}>Ends soon</Text>
           </View>
           <CountdownTimer />
           <TouchableOpacity style={styles.flashBtn} onPress={() => navigateToCollection('daily-deals')}>
@@ -356,17 +366,7 @@ const HomeScreen = ({navigation}: any) => {
           </TouchableOpacity>
         </View>
 
-        {/* Quick Badges */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickBadges}>
-          {QUICK_BADGES.map((badge, i) => (
-            <View key={i} style={styles.quickBadge}>
-              <Text style={styles.quickBadgeIcon}>{badge.icon}</Text>
-              <Text style={styles.quickBadgeTitle}>{badge.title}</Text>
-            </View>
-          ))}
-        </ScrollView>
-
-        {/* Product Sections - Using FlatList for performance */}
+        {/* Product Sections */}
         {PRODUCT_SECTIONS.map((section, idx) => {
           const products = sectionProducts[section.handle];
           if (!products || products.length === 0) return null;
@@ -374,22 +374,23 @@ const HomeScreen = ({navigation}: any) => {
           return (
             <View key={idx} style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>{section.title}</Text>
+                <View>
+                  <Text style={styles.sectionTitle}>{section.title}</Text>
+                  <Text style={styles.sectionSubtitle}>{section.subtitle}</Text>
+                </View>
                 <TouchableOpacity onPress={() => navigateToCollection(section.handle)}>
                   <Text style={styles.viewAll}>View All →</Text>
                 </TouchableOpacity>
               </View>
               <FlatList
-                horizontal
+                horizontal={true}
                 data={products}
                 renderItem={renderProduct}
                 keyExtractor={keyExtractor}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.productsScroll}
-                removeClippedSubviews={true}
                 initialNumToRender={3}
                 maxToRenderPerBatch={4}
-                windowSize={3}
               />
             </View>
           );
@@ -406,18 +407,6 @@ const HomeScreen = ({navigation}: any) => {
               </View>
             ))}
           </View>
-        </View>
-
-        {/* Brands */}
-        <View style={styles.brandsSection}>
-          <Text style={styles.brandsTitle}>Brands We Carry</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.brandsScroll}>
-            {BRAND_LOGOS.map((b, i) => (
-              <TouchableOpacity key={i} style={styles.brandItem} onPress={() => b.link && navigateToCollection(b.link)}>
-                <Image source={{uri: getOptimizedImage(b.image, 100)}} style={styles.brandImg} resizeMode="contain" />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
         </View>
 
         {/* Locations */}
@@ -437,20 +426,23 @@ const HomeScreen = ({navigation}: any) => {
           <Text style={styles.newsletterTitle}>Join Our Community 🌱</Text>
           <View style={styles.newsletterForm}>
             <TextInput style={styles.newsletterInput} placeholder="Enter email" placeholderTextColor="#888" value={email} onChangeText={setEmail} />
-            <TouchableOpacity style={styles.newsletterBtn}><Text style={styles.newsletterBtnText}>Subscribe</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.newsletterBtn}>
+              <Text style={styles.newsletterBtnText}>Subscribe</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerBrand}>Sunantha Organic Farms</Text>
-          <Text style={styles.footerContact}>📧 {brand.email} | 📞 {brand.phone}</Text>
+          <Text style={styles.footerContact}>📧 {brand.email}</Text>
+          <Text style={styles.footerContact}>📞 {brand.phone}</Text>
           <Text style={styles.copyright}>© 2025 Sunantha Organic Farms</Text>
         </View>
       </ScrollView>
 
       {/* Voice Modal */}
-      <Modal visible={isListening} transparent animationType="fade">
+      <Modal visible={isListening} transparent={true} animationType="fade">
         <TouchableOpacity style={styles.voiceModal} activeOpacity={1} onPress={() => setIsListening(false)}>
           <View style={styles.voiceModalBox}>
             <Text style={styles.voiceModalTitle}>🎤 Listening...</Text>
@@ -472,135 +464,163 @@ const styles = StyleSheet.create({
   loadingText: {marginTop: 8, color: '#1da362', fontSize: 13},
 
   // Christmas Banner
-  christmasBanner: {backgroundColor: '#c41e3a', paddingVertical: 6, paddingHorizontal: 12, alignItems: 'center'},
-  christmasText: {color: '#fff', fontSize: 11},
+  christmasBanner: {backgroundColor: '#c41e3a', paddingVertical: 8, paddingHorizontal: 12, alignItems: 'center'},
+  christmasText: {color: '#fff', fontSize: 12},
   christmasBold: {fontWeight: 'bold'},
-  christmasCode: {backgroundColor: '#fff', color: '#c41e3a', paddingHorizontal: 4, borderRadius: 2, fontWeight: 'bold', overflow: 'hidden'},
+  christmasCode: {backgroundColor: '#fff', color: '#c41e3a', paddingHorizontal: 4, fontWeight: 'bold'},
 
   // Header
-  header: {backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee'},
-  topBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6},
-  headerLogo: {width: 100, height: 32},
+  header: {backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e5e5e5'},
+  topBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8},
+  headerLogo: {width: 100, height: 35},
   locationRight: {flexDirection: 'row', alignItems: 'center'},
-  locationText: {fontSize: 11, color: '#666'},
+  locationText: {fontSize: 12, color: '#666'},
   locationBold: {fontWeight: 'bold', color: '#333'},
 
-  // Category Pills
-  categoryPillsWrapper: {backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e5e5e5', paddingVertical: 6},
-  categoryPillsContainer: {paddingHorizontal: 8},
-  categoryPill: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 16, borderWidth: 1.5, borderColor: '#1da362', marginRight: 6, backgroundColor: '#fff'},
-  categoryPillActive: {backgroundColor: '#1da362'},
-  categoryPillOffer: {backgroundColor: '#f59e0b', borderColor: '#f59e0b'},
-  categoryPillIcon: {fontSize: 12, marginRight: 4, color: '#1da362'},
-  categoryPillIconActive: {color: '#fff'},
-  categoryPillIconOffer: {color: '#fff'},
-  categoryPillText: {fontSize: 10, fontWeight: '600', color: '#1da362'},
-  categoryPillTextActive: {color: '#fff'},
-  categoryPillTextOffer: {color: '#fff'},
+  // Category Pills - FIXED for proper scrolling
+  categoryPillsContainer: {
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e5e5',
+    height: 50,
+  },
+  categoryPillsContent: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  categoryPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#1da362',
+    marginHorizontal: 4,
+    backgroundColor: '#fff',
+    height: 34,
+  },
+  categoryPillActive: {
+    backgroundColor: '#1da362',
+    borderColor: '#1da362',
+  },
+  categoryPillOffer: {
+    backgroundColor: '#f59e0b',
+    borderColor: '#f59e0b',
+  },
+  categoryPillIcon: {
+    fontSize: 14,
+    marginRight: 4,
+  },
+  categoryPillIconActive: {},
+  categoryPillIconOffer: {},
+  categoryPillText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#1da362',
+  },
+  categoryPillTextActive: {
+    color: '#fff',
+  },
+  categoryPillTextOffer: {
+    color: '#fff',
+  },
 
   // Search
-  searchContainer: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6},
-  searchWrap: {flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 6, paddingHorizontal: 8, height: 36},
-  searchInput: {flex: 1, marginHorizontal: 6, fontSize: 12, padding: 0},
-  cartBtn: {marginLeft: 10},
-  cartIcon: {fontSize: 20},
+  searchContainer: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 8},
+  searchWrap: {flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 8, paddingHorizontal: 10, height: 40},
+  searchIconText: {fontSize: 16},
+  searchInput: {flex: 1, marginHorizontal: 8, fontSize: 13, padding: 0, color: '#333'},
+  voiceBtn: {padding: 4},
+  voiceIcon: {fontSize: 16},
+  cartBtn: {marginLeft: 12, padding: 4},
+  cartIconText: {fontSize: 22},
 
   // Hero
-  heroSection: {height: 160},
-  heroSlide: {width: width, height: 160},
+  heroSection: {height: 180},
+  heroSlide: {width: width, height: 180},
   heroImage: {width: '100%', height: '100%'},
-  heroOverlay: {position: 'absolute', bottom: 0, left: 0, right: 0, padding: 12, backgroundColor: 'rgba(0,0,0,0.4)'},
-  heroTitle: {fontSize: 18, fontWeight: 'bold', color: '#fff'},
-  heroSubtitle: {fontSize: 10, color: '#fff', marginTop: 2},
-  heroBtn: {backgroundColor: '#1da362', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14, marginTop: 6},
-  heroBtnText: {color: '#fff', fontSize: 10, fontWeight: '600'},
-  heroDots: {position: 'absolute', bottom: 6, alignSelf: 'center', flexDirection: 'row'},
-  heroDot: {width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.5)', marginHorizontal: 2},
-  heroDotActive: {backgroundColor: '#fff', width: 14},
+  heroOverlay: {position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: 'rgba(0,0,0,0.4)'},
+  heroTitle: {fontSize: 20, fontWeight: 'bold', color: '#fff'},
+  heroSubtitle: {fontSize: 11, color: '#fff', marginTop: 2},
+  heroBtn: {backgroundColor: '#1da362', alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, marginTop: 8},
+  heroBtnText: {color: '#fff', fontSize: 11, fontWeight: '600'},
+  heroDots: {position: 'absolute', bottom: 8, alignSelf: 'center', flexDirection: 'row'},
+  heroDot: {width: 8, height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.5)', marginHorizontal: 3},
+  heroDotActive: {backgroundColor: '#fff', width: 20},
 
   // Flash Sale
-  flashSale: {flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff8e1', padding: 10, marginHorizontal: 12, marginTop: 10, borderRadius: 10, borderWidth: 1, borderColor: '#ffd54f'},
-  flashIcon: {fontSize: 20, marginRight: 6},
+  flashSale: {flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff8e1', padding: 12, marginHorizontal: 12, marginTop: 12, borderRadius: 12, borderWidth: 1, borderColor: '#ffd54f'},
+  flashIcon: {fontSize: 24, marginRight: 8},
   flashInfo: {flex: 1},
-  flashTitle: {fontSize: 12, fontWeight: 'bold', color: '#333'},
-  flashSub: {fontSize: 9, color: '#666'},
-  flashCountdown: {flexDirection: 'row', marginRight: 6},
-  countdownBox: {backgroundColor: '#333', borderRadius: 3, paddingHorizontal: 4, paddingVertical: 2, marginHorizontal: 1, alignItems: 'center'},
-  countdownNum: {color: '#fff', fontSize: 10, fontWeight: 'bold'},
-  countdownLabel: {color: '#aaa', fontSize: 7},
-  flashBtn: {backgroundColor: '#1da362', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12},
-  flashBtnText: {color: '#fff', fontSize: 9, fontWeight: '600'},
-
-  // Quick Badges
-  quickBadges: {marginTop: 8, paddingHorizontal: 8},
-  quickBadge: {flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, marginRight: 8, borderWidth: 1, borderColor: '#eee'},
-  quickBadgeIcon: {fontSize: 14, marginRight: 4},
-  quickBadgeTitle: {fontSize: 10, fontWeight: '600', color: '#333'},
+  flashTitle: {fontSize: 14, fontWeight: 'bold', color: '#333'},
+  flashSub: {fontSize: 10, color: '#666'},
+  flashCountdown: {flexDirection: 'row', alignItems: 'center', marginRight: 10},
+  countdownBox: {backgroundColor: '#333', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 4},
+  countdownNum: {color: '#fff', fontSize: 12, fontWeight: 'bold'},
+  countdownSep: {color: '#333', fontSize: 14, fontWeight: 'bold', marginHorizontal: 2},
+  flashBtn: {backgroundColor: '#1da362', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 16},
+  flashBtnText: {color: '#fff', fontSize: 11, fontWeight: '600'},
 
   // Sections
-  section: {backgroundColor: '#fff', marginTop: 10, paddingVertical: 10},
-  sectionHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, marginBottom: 8},
-  sectionTitle: {fontSize: 14, fontWeight: 'bold', color: '#333'},
-  viewAll: {fontSize: 10, color: '#1da362', fontWeight: '500'},
+  section: {backgroundColor: '#fff', marginTop: 12, paddingVertical: 12},
+  sectionHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingHorizontal: 12, marginBottom: 10},
+  sectionTitle: {fontSize: 15, fontWeight: 'bold', color: '#333'},
+  sectionSubtitle: {fontSize: 11, color: '#888', marginTop: 2},
+  viewAll: {fontSize: 11, color: '#1da362', fontWeight: '500'},
   productsScroll: {paddingHorizontal: 8},
 
   // Product Card
-  productCard: {width: 120, backgroundColor: '#fff', borderRadius: 6, marginRight: 8, borderWidth: 1, borderColor: '#eee', overflow: 'hidden'},
-  productImageWrap: {width: '100%', height: 90, backgroundColor: '#f9f9f9'},
+  productCard: {width: 130, backgroundColor: '#fff', borderRadius: 8, marginHorizontal: 4, borderWidth: 1, borderColor: '#eee', overflow: 'hidden'},
+  productImageWrap: {width: '100%', height: 100, backgroundColor: '#f9f9f9'},
   productImage: {width: '100%', height: '100%'},
-  saleBadge: {position: 'absolute', top: 4, left: 4, backgroundColor: '#e53935', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 2},
-  saleBadgeText: {color: '#fff', fontSize: 8, fontWeight: 'bold'},
-  productInfo: {padding: 6},
-  productTitle: {fontSize: 10, color: '#333', height: 24, lineHeight: 12},
-  priceRow: {flexDirection: 'row', alignItems: 'center', marginTop: 2},
-  productPrice: {fontSize: 11, fontWeight: 'bold', color: '#1da362'},
-  comparePrice: {fontSize: 9, color: '#999', textDecorationLine: 'line-through', marginLeft: 3},
-  addBtn: {backgroundColor: '#fff', borderWidth: 1, borderColor: '#1da362', paddingVertical: 4, borderRadius: 4, alignItems: 'center', marginTop: 4},
-  addBtnText: {color: '#1da362', fontSize: 9, fontWeight: 'bold'},
+  saleBadge: {position: 'absolute', top: 6, left: 6, backgroundColor: '#e53935', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 3},
+  saleBadgeText: {color: '#fff', fontSize: 9, fontWeight: 'bold'},
+  productInfo: {padding: 8},
+  productTitle: {fontSize: 11, color: '#333', height: 28, lineHeight: 14},
+  priceRow: {flexDirection: 'row', alignItems: 'center', marginTop: 4},
+  productPrice: {fontSize: 13, fontWeight: 'bold', color: '#1da362'},
+  comparePrice: {fontSize: 10, color: '#999', textDecorationLine: 'line-through', marginLeft: 4},
+  addBtn: {backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#1da362', paddingVertical: 5, borderRadius: 6, alignItems: 'center', marginTop: 6},
+  addBtnText: {color: '#1da362', fontSize: 10, fontWeight: 'bold'},
 
   // Trust
-  trustSection: {backgroundColor: '#fff', paddingVertical: 16, marginTop: 10},
-  trustTitle: {fontSize: 14, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 12},
+  trustSection: {backgroundColor: '#fff', paddingVertical: 20, marginTop: 12},
+  trustTitle: {fontSize: 15, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 14},
   trustGrid: {flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 8},
   trustBadge: {alignItems: 'center', width: '22%'},
-  trustEmoji: {fontSize: 22, marginBottom: 4},
-  trustBadgeTitle: {fontSize: 9, fontWeight: '600', color: '#333', textAlign: 'center'},
-
-  // Brands
-  brandsSection: {backgroundColor: '#fff', paddingVertical: 12, marginTop: 10},
-  brandsTitle: {fontSize: 13, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 8},
-  brandsScroll: {paddingHorizontal: 12},
-  brandItem: {width: 60, height: 45, marginRight: 10, backgroundColor: '#f9f9f9', borderRadius: 6, justifyContent: 'center', alignItems: 'center'},
-  brandImg: {width: '80%', height: '80%'},
+  trustEmoji: {fontSize: 26, marginBottom: 6},
+  trustBadgeTitle: {fontSize: 10, fontWeight: '600', color: '#333', textAlign: 'center'},
 
   // Locations
-  locationsSection: {backgroundColor: '#fff', paddingVertical: 14, marginTop: 10},
-  locationsTitle: {fontSize: 13, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 10},
-  locationCard: {backgroundColor: '#f9f9f9', marginHorizontal: 12, padding: 12, borderRadius: 8},
-  locationName: {fontSize: 13, fontWeight: 'bold', color: '#333'},
-  locationAddress: {fontSize: 10, color: '#666', marginTop: 4},
-  directionsBtn: {backgroundColor: '#1da362', paddingVertical: 8, borderRadius: 6, alignItems: 'center', marginTop: 10},
-  directionsBtnText: {color: '#fff', fontSize: 11, fontWeight: '600'},
+  locationsSection: {backgroundColor: '#fff', paddingVertical: 16, marginTop: 12},
+  locationsTitle: {fontSize: 15, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 12},
+  locationCard: {backgroundColor: '#f9f9f9', marginHorizontal: 12, padding: 14, borderRadius: 10},
+  locationName: {fontSize: 14, fontWeight: 'bold', color: '#333'},
+  locationAddress: {fontSize: 11, color: '#666', marginTop: 4},
+  directionsBtn: {backgroundColor: '#1da362', paddingVertical: 10, borderRadius: 8, alignItems: 'center', marginTop: 12},
+  directionsBtnText: {color: '#fff', fontSize: 12, fontWeight: '600'},
 
   // Newsletter
-  newsletterSection: {backgroundColor: '#1da362', paddingVertical: 16, paddingHorizontal: 12, marginTop: 10},
-  newsletterTitle: {fontSize: 14, fontWeight: 'bold', color: '#fff', textAlign: 'center'},
-  newsletterForm: {flexDirection: 'row', marginTop: 10},
-  newsletterInput: {flex: 1, backgroundColor: '#fff', borderRadius: 6, paddingHorizontal: 10, paddingVertical: 8, fontSize: 11},
-  newsletterBtn: {backgroundColor: '#163340', paddingHorizontal: 14, borderRadius: 6, justifyContent: 'center', marginLeft: 6},
-  newsletterBtnText: {color: '#fff', fontSize: 10, fontWeight: '600'},
+  newsletterSection: {backgroundColor: '#1da362', paddingVertical: 20, paddingHorizontal: 12, marginTop: 12},
+  newsletterTitle: {fontSize: 16, fontWeight: 'bold', color: '#fff', textAlign: 'center'},
+  newsletterForm: {flexDirection: 'row', marginTop: 12},
+  newsletterInput: {flex: 1, backgroundColor: '#fff', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 13},
+  newsletterBtn: {backgroundColor: '#163340', paddingHorizontal: 16, borderRadius: 8, justifyContent: 'center', marginLeft: 8},
+  newsletterBtnText: {color: '#fff', fontSize: 12, fontWeight: '600'},
 
   // Footer
-  footer: {backgroundColor: '#163340', paddingVertical: 16, alignItems: 'center'},
-  footerBrand: {fontSize: 13, fontWeight: 'bold', color: '#fff'},
-  footerContact: {fontSize: 10, color: 'rgba(255,255,255,0.7)', marginTop: 4},
-  copyright: {fontSize: 9, color: 'rgba(255,255,255,0.5)', marginTop: 6},
+  footer: {backgroundColor: '#163340', paddingVertical: 20, alignItems: 'center'},
+  footerBrand: {fontSize: 14, fontWeight: 'bold', color: '#fff'},
+  footerContact: {fontSize: 11, color: 'rgba(255,255,255,0.7)', marginTop: 4},
+  copyright: {fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 8},
 
   // Voice Modal
   voiceModal: {flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center'},
-  voiceModalBox: {backgroundColor: '#fff', borderRadius: 12, padding: 20, alignItems: 'center', width: width * 0.7},
-  voiceModalTitle: {fontSize: 16, fontWeight: 'bold', color: '#333'},
-  voiceModalBtn: {backgroundColor: '#f0f0f0', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 6, marginTop: 12},
+  voiceModalBox: {backgroundColor: '#fff', borderRadius: 16, padding: 24, alignItems: 'center', width: width * 0.75},
+  voiceModalTitle: {fontSize: 18, fontWeight: 'bold', color: '#333'},
+  voiceModalBtn: {backgroundColor: '#f0f0f0', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, marginTop: 16},
   voiceModalBtnText: {color: '#666', fontWeight: '600'},
 });
 
