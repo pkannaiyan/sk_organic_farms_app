@@ -34,7 +34,21 @@ const {width} = Dimensions.get('window');
 const FILES_CDN = 'https://cdn.shopify.com/s/files/1/0551/4417/files';
 const LOGO_IMAGE = `${FILES_CDN}/LogoColorTextBelow_3223832e-681f-41c8-9347-b0f342a6384a.jpg`;
 
-// Shop by Category - with emojis
+// Category pills bar (like image) - with icons
+const CATEGORY_PILLS = [
+  {icon: '📋', name: 'All Products', handle: 'all', isActive: true, isOffer: false},
+  {icon: '🌱', name: 'Seeds', handle: 'organic-seeds', isActive: false, isOffer: false},
+  {icon: '🪴', name: 'Plants', handle: 'live-plants', isActive: false, isOffer: false},
+  {icon: '🌿', name: 'Organic Manure', handle: 'organic-manures', isActive: false, isOffer: false},
+  {icon: '🔧', name: 'Tools', handle: 'falcon-1', isActive: false, isOffer: false},
+  {icon: '🏺', name: 'Pots', handle: 'garden-sprayer', isActive: false, isOffer: false},
+  {icon: '🌾', name: 'Millets', handle: 'organic-millets-rice', isActive: false, isOffer: false},
+  {icon: '💚', name: 'Spirulina', handle: 'spirulina', isActive: false, isOffer: false},
+  {icon: '🏆', name: 'Brands', handle: 'brands', isActive: false, isOffer: false},
+  {icon: '🏷️', name: 'Offers', handle: 'daily-deals', isActive: false, isOffer: true},
+];
+
+// Shop by Category - circular icons
 const CATEGORIES = [
   {emoji: '🌱', name: 'Seeds', handle: 'organic-seeds'},
   {emoji: '🪴', name: 'Plants', handle: 'live-plants'},
@@ -380,9 +394,9 @@ const HomeScreen = ({navigation}: any) => {
 
       {/* ========== HEADER ========== */}
       <View style={styles.header}>
-        {/* Location Bar */}
-        <View style={styles.locationBar}>
-          <Text style={styles.brandTitle}>Sunantha Organic Farms</Text>
+        {/* Top Bar with Logo and Location */}
+        <View style={styles.topBar}>
+          <Image source={{uri: LOGO_IMAGE}} style={styles.headerLogo} resizeMode="contain" />
           <View style={styles.locationRight}>
             <Text style={styles.locationIcon}>📍</Text>
             <Text style={styles.locationText}>Deliver to <Text style={styles.locationBold}>Chennai, Tamil Nadu</Text></Text>
@@ -395,13 +409,21 @@ const HomeScreen = ({navigation}: any) => {
           <Text style={styles.contactText}>📞 {brand.phone}</Text>
         </View>
 
-        {/* Navigation */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.navScroll}>
-          <TouchableOpacity style={styles.navItem}><Text style={styles.navText}>Home</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}><Text style={styles.navText}>Seeds ▾</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}><Text style={styles.navText}>Garden ▾</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}><Text style={styles.navText}>Others ▾</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Collections')}><Text style={styles.navText}>Menu</Text></TouchableOpacity>
+        {/* Category Pills Bar (like image) */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryPillsScroll} contentContainerStyle={styles.categoryPillsContainer}>
+          {CATEGORY_PILLS.map((cat, i) => (
+            <TouchableOpacity 
+              key={i} 
+              style={[
+                styles.categoryPill, 
+                cat.isActive && styles.categoryPillActive,
+                cat.isOffer && styles.categoryPillOffer
+              ]} 
+              onPress={() => cat.handle === 'all' ? navigation.navigate('Collections') : navigateToCollection(cat.handle)}>
+              <Text style={[styles.categoryPillIcon, cat.isActive && styles.categoryPillIconActive, cat.isOffer && styles.categoryPillIconOffer]}>{cat.icon}</Text>
+              <Text style={[styles.categoryPillText, cat.isActive && styles.categoryPillTextActive, cat.isOffer && styles.categoryPillTextOffer]}>{cat.name}</Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
 
         {/* Search Bar */}
@@ -819,17 +841,27 @@ const styles = StyleSheet.create({
 
   // Header
   header: {backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee', paddingBottom: 8},
-  locationBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#f9f9f9'},
-  brandTitle: {fontSize: 14, fontWeight: 'bold', color: '#1da362'},
+  topBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#f9f9f9'},
+  headerLogo: {width: 120, height: 40},
   locationRight: {flexDirection: 'row', alignItems: 'center'},
   locationIcon: {marginRight: 4},
   locationText: {fontSize: 11, color: '#666'},
   locationBold: {fontWeight: 'bold', color: '#333'},
   contactRow: {flexDirection: 'row', justifyContent: 'center', paddingVertical: 4, gap: 16},
   contactText: {fontSize: 10, color: '#666'},
-  navScroll: {borderBottomWidth: 1, borderBottomColor: '#eee'},
-  navItem: {paddingHorizontal: 12, paddingVertical: 8},
-  navText: {fontSize: 12, color: '#333', fontWeight: '500'},
+  
+  // Category Pills Bar
+  categoryPillsScroll: {backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee'},
+  categoryPillsContainer: {paddingHorizontal: 8, paddingVertical: 10},
+  categoryPill: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5, borderColor: '#1da362', marginHorizontal: 4, backgroundColor: '#fff'},
+  categoryPillActive: {backgroundColor: '#1da362', borderColor: '#1da362'},
+  categoryPillOffer: {backgroundColor: '#f59e0b', borderColor: '#f59e0b'},
+  categoryPillIcon: {fontSize: 14, marginRight: 6, color: '#1da362'},
+  categoryPillIconActive: {color: '#fff'},
+  categoryPillIconOffer: {color: '#fff'},
+  categoryPillText: {fontSize: 12, fontWeight: '600', color: '#1da362'},
+  categoryPillTextActive: {color: '#fff'},
+  categoryPillTextOffer: {color: '#fff'},
   searchContainer: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 8},
   searchWrap: {flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 6, paddingHorizontal: 8},
   searchIcon: {marginRight: 6},
