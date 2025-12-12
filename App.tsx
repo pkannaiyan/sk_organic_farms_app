@@ -10,6 +10,7 @@ import CartScreen from './src/screens/CartScreen';
 import AccountScreen from './src/screens/AccountScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import CollectionDetailScreen from './src/screens/CollectionDetailScreen';
+import SeedsCollectionScreen from './src/screens/SeedsCollectionScreen';
 import {colors} from './src/constants/theme';
 
 const Tab = createBottomTabNavigator();
@@ -25,6 +26,7 @@ const HomeStack = () => (
     <Stack.Screen name="HomeMain" component={HomeScreen} />
     <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
     <Stack.Screen name="CollectionDetail" component={CollectionDetailScreen} />
+    <Stack.Screen name="SeedsCollection" component={SeedsCollectionScreen} />
   </Stack.Navigator>
 );
 

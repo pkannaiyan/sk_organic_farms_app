@@ -34,18 +34,18 @@ const {width} = Dimensions.get('window');
 const FILES_CDN = 'https://cdn.shopify.com/s/files/1/0551/4417/files';
 const LOGO_IMAGE = `${FILES_CDN}/LogoColorTextBelow_3223832e-681f-41c8-9347-b0f342a6384a.jpg`;
 
-// Category pills (Blinkit style)
+// Category pills (Blinkit style) - with custom template screens
 const CATEGORY_PILLS = [
-  {emoji: '🌱', name: 'Seeds', handle: 'organic-seeds', color: '#4caf50'},
-  {emoji: '🪴', name: 'Plants', handle: 'live-plants', color: '#8bc34a'},
-  {emoji: '🧪', name: 'Manure', handle: 'organic-manures', color: '#795548'},
-  {emoji: '🔧', name: 'Tools', handle: 'falcon-1', color: '#607d8b'},
-  {emoji: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', color: '#3f51b5'},
-  {emoji: '🏺', name: 'Pots', handle: 'planters', color: '#ff9800'},
-  {emoji: '🌾', name: 'Millets', handle: 'organic-millets-rice', color: '#ffc107'},
-  {emoji: '💚', name: 'Spirulina', handle: 'spirulina', color: '#009688'},
-  {emoji: '📦', name: 'Packages', handle: 'our-packages', color: '#9c27b0'},
-  {emoji: '🏷️', name: 'Offers', handle: 'daily-deals', color: '#f44336'},
+  {emoji: '🌱', name: 'Seeds', handle: 'organic-seeds', color: '#4caf50', screen: 'SeedsCollection'},
+  {emoji: '🪴', name: 'Plants', handle: 'live-plants', color: '#8bc34a', screen: null},
+  {emoji: '🧪', name: 'Manure', handle: 'organic-manures', color: '#795548', screen: null},
+  {emoji: '🔧', name: 'Tools', handle: 'falcon-1', color: '#607d8b', screen: null},
+  {emoji: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', color: '#3f51b5', screen: null},
+  {emoji: '🏺', name: 'Pots', handle: 'planters', color: '#ff9800', screen: null},
+  {emoji: '🌾', name: 'Millets', handle: 'organic-millets-rice', color: '#ffc107', screen: null},
+  {emoji: '💚', name: 'Spirulina', handle: 'spirulina', color: '#009688', screen: null},
+  {emoji: '📦', name: 'Packages', handle: 'our-packages', color: '#9c27b0', screen: null},
+  {emoji: '🏷️', name: 'Offers', handle: 'daily-deals', color: '#f44336', screen: null},
 ];
 
 // Hero slides
@@ -269,11 +269,16 @@ const HomeScreen = ({navigation}: any) => {
     }
   }, [collections, navigation]);
 
-  // Handle category pill press
+  // Handle category pill press - use custom screen if available
   const handlePillPress = useCallback((index: number, pill: typeof CATEGORY_PILLS[0]) => {
     setActivePill(index);
-    navigateToCollection(pill.handle, pill.name);
-  }, [navigateToCollection]);
+    // If pill has a custom screen, navigate to it
+    if (pill.screen) {
+      navigation.navigate(pill.screen);
+    } else {
+      navigateToCollection(pill.handle, pill.name);
+    }
+  }, [navigation, navigateToCollection]);
 
   // Render product
   const renderProduct = useCallback(({item}: {item: ShopifyProduct}) => (
