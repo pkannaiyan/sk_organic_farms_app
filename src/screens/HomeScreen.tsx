@@ -272,48 +272,37 @@ const HomeScreen = ({navigation}: any) => {
           </View>
         </View>
 
-        {/* Category Pills - Blinkit Style with Images */}
+        {/* Category Pills */}
         <View style={styles.categoryPillsContainer}>
           <FlatList
             horizontal={true}
             data={CATEGORY_PILLS}
-            keyExtractor={(item, index) => `pill-${index}`}
+            keyExtractor={(item, index) => String(index)}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categoryPillsContent}
-            renderItem={({item, index}) => {
-              const isActive = index === activePill;
-              const isOffer = item.type === 'offer';
-              const bgColor = item.color ? item.color + '20' : '#f0f0f0';
-              
-              return (
-                <TouchableOpacity
+            renderItem={({item, index}) => (
+              <TouchableOpacity
+                style={[
+                  styles.categoryPill,
+                  index === activePill ? styles.categoryPillActive : null,
+                  item.type === 'offer' ? styles.categoryPillOffer : null,
+                ]}
+                onPress={() => handlePillPress(index, item)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.categoryPillEmojiWrap, {backgroundColor: item.color + '15'}]}>
+                  <Text style={styles.categoryPillEmoji}>{item.emoji}</Text>
+                </View>
+                <Text 
                   style={[
-                    styles.categoryPill,
-                    isActive && styles.categoryPillActive,
-                    isOffer && styles.categoryPillOffer,
-                  ]}
-                  onPress={() => handlePillPress(index, item)}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.categoryPillImageWrap, {backgroundColor: bgColor}]}>
-                    <Image 
-                      source={{uri: item.image}} 
-                      style={styles.categoryPillImage} 
-                      resizeMode="cover"
-                      defaultSource={{uri: 'https://via.placeholder.com/30'}}
-                    />
-                  </View>
-                  <Text 
-                    style={[
-                      styles.categoryPillText,
-                      isActive && styles.categoryPillTextActive,
-                      isOffer && styles.categoryPillTextOffer,
-                    ]} 
-                    numberOfLines={1}
-                  >{item.name}</Text>
-                </TouchableOpacity>
-              );
-            }}
+                    styles.categoryPillText,
+                    index === activePill ? styles.categoryPillTextActive : null,
+                    item.type === 'offer' ? styles.categoryPillTextOffer : null,
+                  ]} 
+                  numberOfLines={1}
+                >{item.name}</Text>
+              </TouchableOpacity>
+            )}
           />
         </View>
 
@@ -530,19 +519,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff3e0',
     borderColor: '#f59e0b',
   },
-  categoryPillImageWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    overflow: 'hidden',
-    marginRight: 8,
+  categoryPillEmojiWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 6,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  categoryPillImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+  categoryPillEmoji: {
+    fontSize: 16,
   },
   categoryPillText: {
     fontSize: 12,
