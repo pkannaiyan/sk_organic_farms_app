@@ -36,20 +36,20 @@ const LOGO_IMAGE = `${FILES_CDN}/LogoColorTextBelow_3223832e-681f-41c8-9347-b0f3
 
 // Category pills with images (Blinkit style)
 const CATEGORY_PILLS = [
-  {image: `${FILES_CDN}/all-products-icon.png`, name: 'All Products', handle: 'all-products', type: 'all', color: '#1da362'},
-  {image: `${FILES_CDN}/IMG-2091.png`, name: 'Seeds', handle: 'organic-seeds', type: 'collection', color: '#4caf50'},
-  {image: `${FILES_CDN}/LemonGrass_e7758c23-de7a-4c5d-8689-dd59209ba9f5.jpg`, name: 'Plants', handle: 'live-plants', type: 'collection', color: '#8bc34a'},
-  {image: `${FILES_CDN}/IMG-2090.png`, name: 'Manure', handle: 'organic-manures', type: 'collection', color: '#795548'},
-  {image: `${FILES_CDN}/falcon.jpg`, name: 'Tools', handle: 'falcon-1', type: 'collection', color: '#607d8b'},
-  {image: `${FILES_CDN}/3110-05.jpg`, name: 'Pots', handle: 'planters', type: 'collection', color: '#ff9800'},
-  {image: `${FILES_CDN}/best_seller.jpg`, name: 'Millets', handle: 'organic-millets-rice', type: 'collection', color: '#ffc107'},
-  {image: `${FILES_CDN}/spirulina-powder.jpg`, name: 'Spirulina', handle: 'spirulina', type: 'collection', color: '#009688'},
-  {image: `${FILES_CDN}/IMG-2104.png`, name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', type: 'collection', color: '#3f51b5'},
-  {image: `${FILES_CDN}/IMG-2097.png`, name: 'Packages', handle: 'our-packages', type: 'collection', color: '#9c27b0'},
-  {image: `${FILES_CDN}/4786E3F2-BDCD-484D-9274-66DE8A5A4834.webp`, name: 'Skin Care', handle: 'skin-and-hair-care', type: 'collection', color: '#e91e63'},
-  {image: `${FILES_CDN}/SEAWEED.jpg`, name: 'Sea Weed', handle: 'sea-weed-products', type: 'collection', color: '#00bcd4'},
-  {image: `${FILES_CDN}/biocurve.jpg`, name: 'Brands', handle: 'brands', type: 'brands', color: '#673ab7'},
-  {image: `${FILES_CDN}/daily.png`, name: 'Offers', handle: 'daily-deals', type: 'offer', color: '#f44336'},
+  {image: `${FILES_CDN}/IMG-2091.png`, emoji: '📋', name: 'All Products', handle: 'all-products', type: 'all', color: '#1da362'},
+  {image: `${FILES_CDN}/IMG-2091.png`, emoji: '🌱', name: 'Seeds', handle: 'organic-seeds', type: 'collection', color: '#4caf50'},
+  {image: `${FILES_CDN}/LemonGrass_e7758c23-de7a-4c5d-8689-dd59209ba9f5.jpg`, emoji: '🪴', name: 'Plants', handle: 'live-plants', type: 'collection', color: '#8bc34a'},
+  {image: `${FILES_CDN}/IMG-2090.png`, emoji: '🌿', name: 'Manure', handle: 'organic-manures', type: 'collection', color: '#795548'},
+  {image: `${FILES_CDN}/falcon.jpg`, emoji: '🔧', name: 'Tools', handle: 'falcon-1', type: 'collection', color: '#607d8b'},
+  {image: `${FILES_CDN}/3110-05.jpg`, emoji: '🏺', name: 'Pots', handle: 'planters', type: 'collection', color: '#ff9800'},
+  {image: `${FILES_CDN}/best_seller.jpg`, emoji: '🌾', name: 'Millets', handle: 'organic-millets-rice', type: 'collection', color: '#ffc107'},
+  {image: `${FILES_CDN}/spirulina-powder.jpg`, emoji: '💚', name: 'Spirulina', handle: 'spirulina', type: 'collection', color: '#009688'},
+  {image: `${FILES_CDN}/IMG-2104.png`, emoji: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', type: 'collection', color: '#3f51b5'},
+  {image: `${FILES_CDN}/IMG-2097.png`, emoji: '📦', name: 'Packages', handle: 'our-packages', type: 'collection', color: '#9c27b0'},
+  {image: `${FILES_CDN}/4786E3F2-BDCD-484D-9274-66DE8A5A4834.webp`, emoji: '🧴', name: 'Skin Care', handle: 'skin-and-hair-care', type: 'collection', color: '#e91e63'},
+  {image: `${FILES_CDN}/SEAWEED.jpg`, emoji: '🌊', name: 'Sea Weed', handle: 'sea-weed-products', type: 'collection', color: '#00bcd4'},
+  {image: `${FILES_CDN}/biocurve.jpg`, emoji: '🏆', name: 'Brands', handle: 'brands', type: 'brands', color: '#673ab7'},
+  {image: `${FILES_CDN}/daily.png`, emoji: '🏷️', name: 'Offers', handle: 'daily-deals', type: 'offer', color: '#f44336'},
 ];
 
 // Hero slides
@@ -280,33 +280,40 @@ const HomeScreen = ({navigation}: any) => {
             keyExtractor={(item, index) => `pill-${index}`}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.categoryPillsContent}
-            renderItem={({item, index}) => (
-              <TouchableOpacity
-                style={[
-                  styles.categoryPill,
-                  index === activePill && styles.categoryPillActive,
-                  item.type === 'offer' && styles.categoryPillOffer,
-                ]}
-                onPress={() => handlePillPress(index, item)}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.categoryPillImageWrap, {backgroundColor: item.color + '20'}]}>
-                  <Image 
-                    source={{uri: item.image}} 
-                    style={styles.categoryPillImage} 
-                    resizeMode="cover"
-                  />
-                </View>
-                <Text 
+            renderItem={({item, index}) => {
+              const isActive = index === activePill;
+              const isOffer = item.type === 'offer';
+              const bgColor = item.color ? item.color + '20' : '#f0f0f0';
+              
+              return (
+                <TouchableOpacity
                   style={[
-                    styles.categoryPillText,
-                    index === activePill && styles.categoryPillTextActive,
-                    item.type === 'offer' && styles.categoryPillTextOffer,
-                  ]} 
-                  numberOfLines={1}
-                >{item.name}</Text>
-              </TouchableOpacity>
-            )}
+                    styles.categoryPill,
+                    isActive && styles.categoryPillActive,
+                    isOffer && styles.categoryPillOffer,
+                  ]}
+                  onPress={() => handlePillPress(index, item)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.categoryPillImageWrap, {backgroundColor: bgColor}]}>
+                    <Image 
+                      source={{uri: item.image}} 
+                      style={styles.categoryPillImage} 
+                      resizeMode="cover"
+                      defaultSource={{uri: 'https://via.placeholder.com/30'}}
+                    />
+                  </View>
+                  <Text 
+                    style={[
+                      styles.categoryPillText,
+                      isActive && styles.categoryPillTextActive,
+                      isOffer && styles.categoryPillTextOffer,
+                    ]} 
+                    numberOfLines={1}
+                  >{item.name}</Text>
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
 
