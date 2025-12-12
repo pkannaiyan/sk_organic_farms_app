@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -28,7 +27,7 @@ interface CollectionDetailScreenProps {
   route?: {
     params?: {
       collection?: {
-        id: number;
+        id: number | string;
         title: string;
         handle: string;
         description?: string;
@@ -57,33 +56,43 @@ const CollectionDetailScreen: React.FC<CollectionDetailScreenProps> = ({
   }, [collection.handle]);
 
   const loadProducts = async () => {
-    setLoading(true);
-    const data = await fetchCollectionProducts(collection.handle, 50);
-    setProducts(data);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const data = await fetchCollectionProducts(collection.handle, 50);
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const navigateToProduct = (product: ShopifyProduct) => {
-    navigation.navigate('ProductDetail', {
-      product: {
-        id: product.id.toString(),
-        title: product.title,
-        price: getProductPrice(product),
-        compareAtPrice: getCompareAtPrice(product),
-        image: getProductImage(product),
-        images: product.images?.map(img => img.src) || [],
-        description: product.body_html?.replace(/<[^>]*>/g, '') || '',
-        inStock: isProductAvailable(product),
-      },
-    });
+    if (navigation) {
+      navigation.navigate('ProductDetail', {
+        product: {
+          id: product.id.toString(),
+          title: product.title,
+          price: getProductPrice(product),
+          compareAtPrice: getCompareAtPrice(product),
+          image: getProductImage(product),
+          images: product.images?.map(img => img.src) || [],
+          description: product.body_html?.replace(/<[^>]*>/g, '') || '',
+          inStock: isProductAvailable(product),
+        },
+      });
+    }
   };
 
   const renderProduct = ({item}: {item: ShopifyProduct}) => {
     const price = getProductPrice(item);
     const compareAtPrice = getCompareAtPrice(item);
-    const discount = compareAtPrice
+    const hasDiscount = compareAtPrice !== null && compareAtPrice > price;
+    const discount = hasDiscount
       ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
       : 0;
+    const available = isProductAvailable(item);
 
     return (
       <TouchableOpacity
@@ -95,16 +104,16 @@ const CollectionDetailScreen: React.FC<CollectionDetailScreenProps> = ({
             style={styles.productImage}
             resizeMode="cover"
           />
-          {discount > 0 && (
+          {hasDiscount && discount > 0 ? (
             <View style={styles.discountBadge}>
               <Text style={styles.discountText}>{discount}% OFF</Text>
             </View>
-          )}
-          {!isProductAvailable(item) && (
+          ) : null}
+          {!available ? (
             <View style={styles.soldOutBadge}>
               <Text style={styles.soldOutText}>Sold Out</Text>
             </View>
-          )}
+          ) : null}
         </View>
         <View style={styles.productInfo}>
           <Text style={styles.productTitle} numberOfLines={2}>
@@ -112,24 +121,23 @@ const CollectionDetailScreen: React.FC<CollectionDetailScreenProps> = ({
           </Text>
           <View style={styles.priceRow}>
             <Text style={styles.productPrice}>₹{price}</Text>
-            {compareAtPrice && (
+            {hasDiscount ? (
               <Text style={styles.comparePrice}>₹{compareAtPrice}</Text>
-            )}
+            ) : null}
           </View>
           <TouchableOpacity
-            style={[
-              styles.addButton,
-              !isProductAvailable(item) && styles.addButtonDisabled,
-            ]}
-            disabled={!isProductAvailable(item)}>
+            style={[styles.addButton, !available && styles.addButtonDisabled]}
+            disabled={!available}>
             <Text style={styles.addButtonText}>
-              {isProductAvailable(item) ? 'Add to Cart' : 'Notify Me'}
+              {available ? 'Add to Cart' : 'Notify Me'}
             </Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
     );
   };
+
+  const productCount = products ? products.length : 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -141,7 +149,7 @@ const CollectionDetailScreen: React.FC<CollectionDetailScreenProps> = ({
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
-          {collection.title}
+          {collection.title || 'Collection'}
         </Text>
         <TouchableOpacity style={styles.cartButton}>
           <Text style={styles.cartIcon}>🛒</Text>
@@ -149,21 +157,21 @@ const CollectionDetailScreen: React.FC<CollectionDetailScreenProps> = ({
       </View>
 
       {/* Collection Banner */}
-      {collection.image && (
+      {collection.image && collection.image.src ? (
         <Image
           source={{uri: collection.image.src}}
           style={styles.bannerImage}
           resizeMode="cover"
         />
-      )}
+      ) : null}
 
       {/* Collection Info */}
       <View style={styles.collectionInfo}>
-        <Text style={styles.collectionTitle}>{collection.title}</Text>
-        {collection.description && (
+        <Text style={styles.collectionTitle}>{collection.title || 'Collection'}</Text>
+        {collection.description ? (
           <Text style={styles.collectionDesc}>{collection.description}</Text>
-        )}
-        <Text style={styles.productCount}>{products.length} products</Text>
+        ) : null}
+        <Text style={styles.productCount}>{productCount} products</Text>
       </View>
 
       {/* Products Grid */}
@@ -172,7 +180,7 @@ const CollectionDetailScreen: React.FC<CollectionDetailScreenProps> = ({
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Loading products...</Text>
         </View>
-      ) : products.length === 0 ? (
+      ) : productCount === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyIcon}>📦</Text>
           <Text style={styles.emptyText}>No products in this collection</Text>
@@ -369,4 +377,3 @@ const styles = StyleSheet.create({
 });
 
 export default CollectionDetailScreen;
-
