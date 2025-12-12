@@ -1,6 +1,6 @@
 /**
- * HomeScreen - Optimized with Blinkit-style category pills
- * Fixed: Scroll, Navigation, Performance
+ * HomeScreen - Full replica of SK Organic Farms Shopify Theme
+ * All sections from: https://xpue83h8h154o2y9-5514417.shopifypreview.com
  */
 
 import React, {useState, useEffect, useCallback, memo} from 'react';
@@ -34,44 +34,100 @@ const {width} = Dimensions.get('window');
 const FILES_CDN = 'https://cdn.shopify.com/s/files/1/0551/4417/files';
 const LOGO_IMAGE = `${FILES_CDN}/LogoColorTextBelow_3223832e-681f-41c8-9347-b0f342a6384a.jpg`;
 
-// Category pills with images (Blinkit style)
+// Category pills (Blinkit style)
 const CATEGORY_PILLS = [
-  {image: `${FILES_CDN}/IMG-2091.png`, emoji: '📋', name: 'All Products', handle: 'all-products', type: 'all', color: '#1da362'},
-  {image: `${FILES_CDN}/IMG-2091.png`, emoji: '🌱', name: 'Seeds', handle: 'organic-seeds', type: 'collection', color: '#4caf50'},
-  {image: `${FILES_CDN}/LemonGrass_e7758c23-de7a-4c5d-8689-dd59209ba9f5.jpg`, emoji: '🪴', name: 'Plants', handle: 'live-plants', type: 'collection', color: '#8bc34a'},
-  {image: `${FILES_CDN}/IMG-2090.png`, emoji: '🌿', name: 'Manure', handle: 'organic-manures', type: 'collection', color: '#795548'},
-  {image: `${FILES_CDN}/falcon.jpg`, emoji: '🔧', name: 'Tools', handle: 'falcon-1', type: 'collection', color: '#607d8b'},
-  {image: `${FILES_CDN}/3110-05.jpg`, emoji: '🏺', name: 'Pots', handle: 'planters', type: 'collection', color: '#ff9800'},
-  {image: `${FILES_CDN}/best_seller.jpg`, emoji: '🌾', name: 'Millets', handle: 'organic-millets-rice', type: 'collection', color: '#ffc107'},
-  {image: `${FILES_CDN}/spirulina-powder.jpg`, emoji: '💚', name: 'Spirulina', handle: 'spirulina', type: 'collection', color: '#009688'},
-  {image: `${FILES_CDN}/IMG-2104.png`, emoji: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', type: 'collection', color: '#3f51b5'},
-  {image: `${FILES_CDN}/IMG-2097.png`, emoji: '📦', name: 'Packages', handle: 'our-packages', type: 'collection', color: '#9c27b0'},
-  {image: `${FILES_CDN}/4786E3F2-BDCD-484D-9274-66DE8A5A4834.webp`, emoji: '🧴', name: 'Skin Care', handle: 'skin-and-hair-care', type: 'collection', color: '#e91e63'},
-  {image: `${FILES_CDN}/SEAWEED.jpg`, emoji: '🌊', name: 'Sea Weed', handle: 'sea-weed-products', type: 'collection', color: '#00bcd4'},
-  {image: `${FILES_CDN}/biocurve.jpg`, emoji: '🏆', name: 'Brands', handle: 'brands', type: 'brands', color: '#673ab7'},
-  {image: `${FILES_CDN}/daily.png`, emoji: '🏷️', name: 'Offers', handle: 'daily-deals', type: 'offer', color: '#f44336'},
+  {emoji: '🌱', name: 'Seeds', handle: 'organic-seeds', color: '#4caf50'},
+  {emoji: '🪴', name: 'Plants', handle: 'live-plants', color: '#8bc34a'},
+  {emoji: '🧪', name: 'Manure', handle: 'organic-manures', color: '#795548'},
+  {emoji: '🔧', name: 'Tools', handle: 'falcon-1', color: '#607d8b'},
+  {emoji: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', color: '#3f51b5'},
+  {emoji: '🏺', name: 'Pots', handle: 'planters', color: '#ff9800'},
+  {emoji: '🌾', name: 'Millets', handle: 'organic-millets-rice', color: '#ffc107'},
+  {emoji: '💚', name: 'Spirulina', handle: 'spirulina', color: '#009688'},
+  {emoji: '📦', name: 'Packages', handle: 'our-packages', color: '#9c27b0'},
+  {emoji: '🏷️', name: 'Offers', handle: 'daily-deals', color: '#f44336'},
 ];
 
 // Hero slides
 const HERO_SLIDES = [
-  {image: `${FILES_CDN}/IMG_2100.png`, title: 'Fresh Organic Products', subtitle: '100% Natural • Certified Organic', button: 'Shop Now', link: 'organic-manures'},
-  {image: `${FILES_CDN}/IMG_2099.png`, title: 'Native Organic Seeds', subtitle: 'Vegetable, Flower & Herb Seeds', button: 'Shop Seeds', link: 'organic-seeds'},
-  {image: `${FILES_CDN}/IMG_2101.png`, title: 'Garden Setup Services', subtitle: 'Shade House & Terrace Garden', button: 'Get Started', link: 'our-packages'},
+  {image: `${FILES_CDN}/IMG_2100.png`, title: 'Fresh Organic Products', subtitle: '100% Natural • Certified Organic • Sustainable Farming', button: 'Shop Now'},
+  {image: `${FILES_CDN}/IMG_2099.png`, title: 'Native Organic Seeds', subtitle: 'Vegetable, Flower, Tree, Fruit & Herbal Seeds', button: 'Shop Seeds'},
+  {image: `${FILES_CDN}/IMG_2101.png`, title: 'Garden Setup Services', subtitle: 'Shade House and Terrace Garden Setup', button: 'Get Started'},
 ];
 
-// Product sections
+// Quick Info Bar items
+const QUICK_INFO = [
+  {emoji: '🏷️', title: 'Daily Deals', sub: 'Up to 50% off'},
+  {emoji: '🚚', title: 'Free Delivery', sub: 'On ₹500+'},
+  {emoji: '🎁', title: 'Combo Offers', sub: 'Save more'},
+];
+
+// Product sections - matching Shopify theme
 const PRODUCT_SECTIONS = [
-  {handle: 'daily-deals', title: '🔥 Today\'s Deals', subtitle: 'Limited time offers'},
-  {handle: 'organic-seeds', title: '🌱 Organic Seeds', subtitle: 'Native varieties'},
-  {handle: 'organic-manures', title: '🌿 Organic Manure', subtitle: 'Premium quality'},
+  {handle: 'daily-deals', title: "🔥 Today's Deals", subtitle: 'Limited time offers - grab them fast!'},
+  {handle: 'organic-seeds', title: '🌱 Organic Seeds', subtitle: 'Native & heirloom varieties'},
+  {handle: 'organic-manures', title: '🌿 Organic Manure', subtitle: 'Premium quality fertilizers'},
+  {handle: 'falcon-1', title: '🔧 Garden Tools', subtitle: 'Premium Falcon & Bellota tools'},
+  {handle: 'organic-millets-rice', title: '🌾 Organic Millets & Rice', subtitle: 'Healthy ancient grains'},
 ];
 
-// Trust badges
+// Services section
+const SERVICES = [
+  {
+    emoji: '🚜',
+    title: 'Visit Our Farm',
+    desc: 'Experience organic farming firsthand! We welcome individuals, schools, and corporate groups.',
+    tags: ['📍 Melkothakuppam', '👨‍👩‍👧‍👦 Groups Welcome', '🌱 Hands-on'],
+    button: 'Book Farm Visit',
+    handle: 'farm-visit-payment',
+  },
+  {
+    emoji: '🧪',
+    title: 'Spirulina Training',
+    desc: 'Complete spirulina cultivation setup with pond installation, training, and ongoing support.',
+    tags: ['🎓 Certification', '🔬 Practical', '📞 Support'],
+    button: 'Learn More',
+    handle: 'training-spirulina-cultivation',
+  },
+];
+
+// Trust badges - Why SK Organic Farms
 const TRUST_BADGES = [
-  {emoji: '🌱', title: '100% Organic'},
+  {emoji: '🌱', title: '100% Organic', desc: 'Certified organic, chemical-free'},
+  {emoji: '🚚', title: 'Fast Delivery', desc: 'Same day dispatch'},
+  {emoji: '💬', title: 'Expert Support', desc: 'Free gardening guidance'},
+  {emoji: '💰', title: 'Best Prices', desc: 'Competitive prices'},
+];
+
+// Customer reviews
+const REVIEWS = [
+  {name: 'Priya Shankar', location: 'Chennai', text: "Best organic seeds I've ever used! My terrace garden is flourishing.", rating: 5},
+  {name: 'Rajesh Kumar', location: 'Bangalore', text: 'Excellent quality manure and grow bags. My plants have never been healthier.', rating: 5},
+  {name: 'Anitha Mohan', location: 'Coimbatore', text: 'The spirulina training was fantastic! Now I\'m growing my own superfood.', rating: 5},
+];
+
+// Brands
+const BRANDS = [
+  {name: 'Falcon', image: `${FILES_CDN}/falcon.jpg`},
+  {name: 'SKOF', image: `${FILES_CDN}/SKOF_new_logo_tm_9b6a7846-af4e-4def-ac18-8b7165eaf2b9.jpg`},
+  {name: 'Bellota', image: `${FILES_CDN}/bellota_logo.jpg`},
+  {name: 'BioCarve', image: `${FILES_CDN}/biocurve.jpg`},
+];
+
+// Blog posts
+const BLOG_POSTS = [
+  {title: 'Tulasi Maadam - Sri Kanchi Temple Works', date: 'Oct 27, 2021', image: `${FILES_CDN}/tulasi.jpg`},
+  {title: 'Controlling Pest and diseases organically', date: 'Oct 7, 2020', image: `${FILES_CDN}/pest.jpg`},
+  {title: 'Farm Visit by Kavi Bharathi Vidyalaya Students', date: 'Jul 25, 2015', image: `${FILES_CDN}/farm.jpg`},
+];
+
+// Bottom trust bar
+const BOTTOM_TRUST = [
+  {emoji: '🔒', title: 'SSL Secure'},
+  {emoji: '✅', title: 'Quality Assured'},
   {emoji: '🚚', title: 'Fast Delivery'},
   {emoji: '💬', title: 'Expert Support'},
-  {emoji: '💰', title: 'Best Prices'},
+  {emoji: '💰', title: 'Money Back'},
 ];
 
 // Optimized image URL
@@ -93,7 +149,7 @@ const ProductCard = memo(({product, onPress}: {product: ShopifyProduct; onPress:
     <TouchableOpacity style={styles.productCard} onPress={onPress} activeOpacity={0.8}>
       <View style={styles.productImageWrap}>
         <Image source={{uri: getOptimizedImage(getProductImage(product), 150)}} style={styles.productImage} resizeMode="cover" />
-        {discount > 0 && <View style={styles.saleBadge}><Text style={styles.saleBadgeText}>{discount}%</Text></View>}
+        {discount > 0 ? <View style={styles.saleBadge}><Text style={styles.saleBadgeText}>{discount}% off</Text></View> : null}
       </View>
       <View style={styles.productInfo}>
         <Text style={styles.productTitle} numberOfLines={2}>{product.title}</Text>
@@ -101,13 +157,13 @@ const ProductCard = memo(({product, onPress}: {product: ShopifyProduct; onPress:
           <Text style={styles.productPrice}>₹{price}</Text>
           {compareAtPrice ? <Text style={styles.comparePrice}>₹{compareAtPrice}</Text> : null}
         </View>
-        <TouchableOpacity style={styles.addBtn}><Text style={styles.addBtnText}>ADD</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.addBtn}><Text style={styles.addBtnText}>Add</Text></TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 });
 
-// Countdown Timer Component (isolated)
+// Countdown Timer Component
 const CountdownTimer = memo(() => {
   const [countdown, setCountdown] = useState({hours: 8, mins: 45, secs: 30});
 
@@ -127,11 +183,9 @@ const CountdownTimer = memo(() => {
 
   return (
     <View style={styles.flashCountdown}>
-      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.hours).padStart(2, '0')}</Text></View>
-      <Text style={styles.countdownSep}>:</Text>
-      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.mins).padStart(2, '0')}</Text></View>
-      <Text style={styles.countdownSep}>:</Text>
-      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.secs).padStart(2, '0')}</Text></View>
+      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.hours).padStart(2, '0')}</Text><Text style={styles.countdownLabel}>Hrs</Text></View>
+      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.mins).padStart(2, '0')}</Text><Text style={styles.countdownLabel}>Min</Text></View>
+      <View style={styles.countdownBox}><Text style={styles.countdownNum}>{String(countdown.secs).padStart(2, '0')}</Text><Text style={styles.countdownLabel}>Sec</Text></View>
     </View>
   );
 });
@@ -139,7 +193,7 @@ const CountdownTimer = memo(() => {
 // Main Component
 const HomeScreen = ({navigation}: any) => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [activePill, setActivePill] = useState(0);
+  const [activePill, setActivePill] = useState(-1);
   const [email, setEmail] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [collections, setCollections] = useState<ShopifyCollection[]>([]);
@@ -151,17 +205,17 @@ const HomeScreen = ({navigation}: any) => {
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveSlide(prev => (prev + 1) % HERO_SLIDES.length);
-    }, 7000);
+    }, 5000);
     return () => clearInterval(timer);
   }, []);
 
-  // Load data with parallel API calls
+  // Load data
   useEffect(() => {
     const loadData = async () => {
       try {
         const [allCollections, ...productResults] = await Promise.all([
           fetchCollections(),
-          ...PRODUCT_SECTIONS.map(section => fetchCollectionProducts(section.handle, 6))
+          ...PRODUCT_SECTIONS.map(section => fetchCollectionProducts(section.handle, 8))
         ]);
 
         setCollections(allCollections);
@@ -199,13 +253,12 @@ const HomeScreen = ({navigation}: any) => {
     });
   }, [navigation]);
 
-  // Navigate to collection - always navigate even if not pre-loaded
+  // Navigate to collection
   const navigateToCollection = useCallback((handle: string, title?: string) => {
     const collection = collections.find(c => c.handle === handle);
     if (collection) {
       navigation.navigate('CollectionDetail', {collection});
     } else {
-      // Create a minimal collection object to navigate
       navigation.navigate('CollectionDetail', {
         collection: {
           id: handle,
@@ -216,19 +269,11 @@ const HomeScreen = ({navigation}: any) => {
     }
   }, [collections, navigation]);
 
-  // Handle category pill press - navigate to respective collection
+  // Handle category pill press
   const handlePillPress = useCallback((index: number, pill: typeof CATEGORY_PILLS[0]) => {
     setActivePill(index);
-    
-    if (pill.type === 'all') {
-      navigation.navigate('Collections');
-    } else if (pill.type === 'brands') {
-      navigation.navigate('Collections');
-    } else {
-      // Navigate to collection with handle and name
-      navigateToCollection(pill.handle, pill.name);
-    }
-  }, [navigation, navigateToCollection]);
+    navigateToCollection(pill.handle, pill.name);
+  }, [navigateToCollection]);
 
   // Render product
   const renderProduct = useCallback(({item}: {item: ShopifyProduct}) => (
@@ -249,61 +294,28 @@ const HomeScreen = ({navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      {/* Christmas Banner */}
+      {/* Christmas Announcement Banner */}
       <View style={styles.christmasBanner}>
         <Text style={styles.christmasText}>
-          <Text>🎄 Christmas Special! </Text>
+          <Text>🎄 Christmas Special! Get </Text>
           <Text style={styles.christmasBold}>25% OFF</Text>
-          <Text> Code: </Text>
+          <Text> on all products </Text>
           <Text style={styles.christmasCode}>XMAS2024</Text>
+          <Text> Shop Now →</Text>
         </Text>
       </View>
 
       {/* Header */}
       <View style={styles.header}>
-        {/* Logo and Location Row */}
         <View style={styles.topBar}>
           <Image source={{uri: LOGO_IMAGE}} style={styles.headerLogo} resizeMode="contain" />
           <View style={styles.locationRight}>
-            <Text style={styles.locationText}>
-              <Text>📍 </Text>
-              <Text style={styles.locationBold}>Chennai</Text>
-            </Text>
+            <Text style={styles.locationText}>📍</Text>
+            <View>
+              <Text style={styles.deliverTo}>Deliver to</Text>
+              <Text style={styles.locationBold}>Chennai, Tamil Nadu</Text>
+            </View>
           </View>
-        </View>
-
-        {/* Category Pills */}
-        <View style={styles.categoryPillsContainer}>
-          <FlatList
-            horizontal={true}
-            data={CATEGORY_PILLS}
-            keyExtractor={(item, index) => String(index)}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoryPillsContent}
-            renderItem={({item, index}) => (
-              <TouchableOpacity
-                style={[
-                  styles.categoryPill,
-                  index === activePill ? styles.categoryPillActive : null,
-                  item.type === 'offer' ? styles.categoryPillOffer : null,
-                ]}
-                onPress={() => handlePillPress(index, item)}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.categoryPillEmojiWrap, {backgroundColor: item.color + '15'}]}>
-                  <Text style={styles.categoryPillEmoji}>{item.emoji}</Text>
-                </View>
-                <Text 
-                  style={[
-                    styles.categoryPillText,
-                    index === activePill ? styles.categoryPillTextActive : null,
-                    item.type === 'offer' ? styles.categoryPillTextOffer : null,
-                  ]} 
-                  numberOfLines={1}
-                >{item.name}</Text>
-              </TouchableOpacity>
-            )}
-          />
         </View>
 
         {/* Search Bar */}
@@ -312,7 +324,7 @@ const HomeScreen = ({navigation}: any) => {
             <Text style={styles.searchIconText}>🔍</Text>
             <TextInput 
               style={styles.searchInput} 
-              placeholder="Search products..." 
+              placeholder="Search for seeds, plants, tools..." 
               placeholderTextColor="#888" 
               value={searchQuery} 
               onChangeText={setSearchQuery} 
@@ -323,6 +335,7 @@ const HomeScreen = ({navigation}: any) => {
           </View>
           <TouchableOpacity style={styles.cartBtn} onPress={() => navigation.navigate('Cart')}>
             <Text style={styles.cartIconText}>🛒</Text>
+            <View style={styles.cartBadge}><Text style={styles.cartBadgeText}>0</Text></View>
           </TouchableOpacity>
         </View>
       </View>
@@ -332,23 +345,24 @@ const HomeScreen = ({navigation}: any) => {
         {/* Hero Slideshow */}
         <View style={styles.heroSection}>
           <FlatList
-            horizontal={true}
-            pagingEnabled={true}
+            horizontal
+            pagingEnabled
             data={HERO_SLIDES}
-            keyExtractor={(item, index) => `slide-${index}`}
+            keyExtractor={(_, index) => `slide-${index}`}
             showsHorizontalScrollIndicator={false}
             onMomentumScrollEnd={(e) => setActiveSlide(Math.round(e.nativeEvent.contentOffset.x / width))}
             renderItem={({item}) => (
-              <TouchableOpacity style={styles.heroSlide} onPress={() => navigateToCollection(item.link)} activeOpacity={0.9}>
+              <View style={styles.heroSlide}>
                 <Image source={{uri: item.image}} style={styles.heroImage} resizeMode="cover" />
                 <View style={styles.heroOverlay}>
+                  <Text style={styles.heroTag}>Farm to Your Doorstep</Text>
                   <Text style={styles.heroTitle}>{item.title}</Text>
                   <Text style={styles.heroSubtitle}>{item.subtitle}</Text>
-                  <View style={styles.heroBtn}>
+                  <TouchableOpacity style={styles.heroBtn}>
                     <Text style={styles.heroBtnText}>{item.button}</Text>
-                  </View>
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
+              </View>
             )}
           />
           <View style={styles.heroDots}>
@@ -358,17 +372,59 @@ const HomeScreen = ({navigation}: any) => {
           </View>
         </View>
 
-        {/* Flash Sale */}
+        {/* Flash Sale Banner */}
         <View style={styles.flashSale}>
-          <Text style={styles.flashIcon}>⚡</Text>
-          <View style={styles.flashInfo}>
-            <Text style={styles.flashTitle}>Flash Sale!</Text>
-            <Text style={styles.flashSub}>Ends soon</Text>
+          <View style={styles.flashLeft}>
+            <Text style={styles.flashIcon}>⚡</Text>
+            <View>
+              <Text style={styles.flashTitle}>Flash Sale Live!</Text>
+              <Text style={styles.flashSub}>Grab deals before midnight</Text>
+            </View>
           </View>
           <CountdownTimer />
           <TouchableOpacity style={styles.flashBtn} onPress={() => navigateToCollection('daily-deals')}>
-            <Text style={styles.flashBtnText}>Shop</Text>
+            <Text style={styles.flashBtnText}>Shop Deals</Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Shop by Category */}
+        <View style={styles.categorySection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Shop by Category</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Collections')}>
+              <Text style={styles.viewAll}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            horizontal
+            data={CATEGORY_PILLS}
+            keyExtractor={(_, i) => `cat-${i}`}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryPillsContent}
+            renderItem={({item, index}) => (
+              <TouchableOpacity
+                style={[styles.categoryPill, index === activePill && styles.categoryPillActive]}
+                onPress={() => handlePillPress(index, item)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.categoryEmojiWrap, {backgroundColor: item.color + '20'}]}>
+                  <Text style={styles.categoryEmoji}>{item.emoji}</Text>
+                </View>
+                <Text style={styles.categoryPillText}>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+
+        {/* Quick Info Bar */}
+        <View style={styles.quickInfoBar}>
+          {QUICK_INFO.map((info, i) => (
+            <View key={i} style={styles.quickInfoItem}>
+              <Text style={styles.quickInfoEmoji}>{info.emoji}</Text>
+              <Text style={styles.quickInfoTitle}>{info.title}</Text>
+              <Text style={styles.quickInfoSub}>{info.sub}</Text>
+            </View>
+          ))}
         </View>
 
         {/* Product Sections */}
@@ -388,49 +444,166 @@ const HomeScreen = ({navigation}: any) => {
                 </TouchableOpacity>
               </View>
               <FlatList
-                horizontal={true}
+                horizontal
                 data={products}
                 renderItem={renderProduct}
                 keyExtractor={keyExtractor}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.productsScroll}
-                initialNumToRender={3}
+                initialNumToRender={4}
                 maxToRenderPerBatch={4}
               />
             </View>
           );
         })}
 
-        {/* Trust Badges */}
-        <View style={styles.trustSection}>
-          <Text style={styles.trustTitle}>Why Choose Us?</Text>
+        {/* Services Section */}
+        <View style={styles.servicesSection}>
+          <Text style={styles.servicesSectionTitle}>✨ Our Services</Text>
+          <Text style={styles.servicesSectionSub}>Learn and experience organic farming with us</Text>
+          <View style={styles.servicesGrid}>
+            {SERVICES.map((service, i) => (
+              <TouchableOpacity key={i} style={styles.serviceCard} onPress={() => navigateToCollection(service.handle)}>
+                <View style={styles.serviceHeader}>
+                  <Text style={styles.serviceEmoji}>{service.emoji}</Text>
+                  <View style={styles.serviceTypeBadge}><Text style={styles.serviceTypeText}>{i === 0 ? 'Experience' : 'Training'}</Text></View>
+                </View>
+                <Text style={styles.serviceTitle}>{service.title}</Text>
+                <Text style={styles.serviceDesc} numberOfLines={3}>{service.desc}</Text>
+                <View style={styles.serviceTags}>
+                  {service.tags.map((tag, j) => (
+                    <Text key={j} style={styles.serviceTag}>{tag}</Text>
+                  ))}
+                </View>
+                <TouchableOpacity style={styles.serviceBtn}>
+                  <Text style={styles.serviceBtnText}>{service.button}</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Why SK Organic Farms */}
+        <View style={styles.whySection}>
+          <Text style={styles.whySectionTitle}>Why SK Organic Farms?</Text>
+          <Text style={styles.whySectionSub}>Trusted by 10,000+ Gardeners</Text>
           <View style={styles.trustGrid}>
             {TRUST_BADGES.map((badge, i) => (
               <View key={i} style={styles.trustBadge}>
                 <Text style={styles.trustEmoji}>{badge.emoji}</Text>
-                <Text style={styles.trustBadgeTitle}>{badge.title}</Text>
+                <Text style={styles.trustTitle}>{badge.title}</Text>
+                <Text style={styles.trustDesc}>{badge.desc}</Text>
               </View>
             ))}
           </View>
         </View>
 
+        {/* Customer Reviews */}
+        <View style={styles.reviewsSection}>
+          <Text style={styles.reviewsSectionTitle}>⭐ Customer Love</Text>
+          <Text style={styles.reviewsSectionSub}>Real reviews from real gardeners</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.reviewsScroll}>
+            {REVIEWS.map((review, i) => (
+              <View key={i} style={styles.reviewCard}>
+                <Text style={styles.reviewText}>"{review.text}"</Text>
+                <View style={styles.reviewAuthor}>
+                  <View style={styles.reviewAvatar}><Text style={styles.reviewAvatarText}>{review.name[0]}</Text></View>
+                  <View>
+                    <Text style={styles.reviewName}>{review.name}</Text>
+                    <Text style={styles.reviewLocation}>{review.location}</Text>
+                  </View>
+                  <Text style={styles.reviewVerified}>✓ Verified Buyer</Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+          <View style={styles.reviewStats}>
+            <View style={styles.reviewStat}><Text style={styles.reviewStatNum}>4.8</Text><Text style={styles.reviewStatLabel}>Average Rating</Text></View>
+            <View style={styles.reviewStat}><Text style={styles.reviewStatNum}>10K+</Text><Text style={styles.reviewStatLabel}>Happy Customers</Text></View>
+            <View style={styles.reviewStat}><Text style={styles.reviewStatNum}>98%</Text><Text style={styles.reviewStatLabel}>Recommend Us</Text></View>
+          </View>
+        </View>
+
+        {/* Bottom Trust Bar */}
+        <View style={styles.bottomTrustBar}>
+          {BOTTOM_TRUST.map((item, i) => (
+            <View key={i} style={styles.bottomTrustItem}>
+              <Text style={styles.bottomTrustEmoji}>{item.emoji}</Text>
+              <Text style={styles.bottomTrustText}>{item.title}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Brands Section */}
+        <View style={styles.brandsSection}>
+          <Text style={styles.brandsSectionTitle}>Brands We Carry</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.brandsScroll}>
+            {BRANDS.map((brand, i) => (
+              <View key={i} style={styles.brandCard}>
+                <Image source={{uri: brand.image}} style={styles.brandImage} resizeMode="contain" />
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Blog Section */}
+        <View style={styles.blogSection}>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>📚 Gardening Tips</Text>
+              <Text style={styles.sectionSubtitle}>Learn from our experts</Text>
+            </View>
+            <TouchableOpacity><Text style={styles.viewAll}>Read More</Text></TouchableOpacity>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.blogScroll}>
+            {BLOG_POSTS.map((post, i) => (
+              <View key={i} style={styles.blogCard}>
+                <View style={styles.blogImagePlaceholder}>
+                  <Text style={styles.blogImageEmoji}>📖</Text>
+                </View>
+                <Text style={styles.blogDate}>{post.date}</Text>
+                <Text style={styles.blogTitle} numberOfLines={2}>{post.title}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+
         {/* Locations */}
         <View style={styles.locationsSection}>
-          <Text style={styles.locationsTitle}>Visit Us</Text>
-          <View style={styles.locationCard}>
-            <Text style={styles.locationName}>🏪 Chennai Store</Text>
-            <Text style={styles.locationAddress}>Ramapuram, Chennai 600089</Text>
-            <TouchableOpacity style={styles.directionsBtn} onPress={() => Linking.openURL('https://maps.google.com/?q=Mahathi+Biotech+Chennai')}>
-              <Text style={styles.directionsBtnText}>Get Directions</Text>
-            </TouchableOpacity>
+          <Text style={styles.locationsSectionTitle}>Our Locations</Text>
+          <Text style={styles.locationsSectionSub}>Visit Us</Text>
+          <View style={styles.locationsGrid}>
+            <View style={styles.locationCard}>
+              <View style={styles.locationIcon}><Text style={styles.locationIconText}>🏪</Text></View>
+              <Text style={styles.locationName}>Retail Store</Text>
+              <Text style={styles.locationTitle}>Chennai Store</Text>
+              <Text style={styles.locationAddress}>Mahathi Biotech{'\n'}Kalasathamman Koil St, Ramapuram{'\n'}Chennai 600089</Text>
+              <Text style={styles.locationPhone}>6380464748</Text>
+              <Text style={styles.locationHours}>Mon - Sun: 9:00 AM - 11:00 PM</Text>
+              <TouchableOpacity style={styles.directionsBtn} onPress={() => Linking.openURL('https://maps.google.com/?q=Mahathi+Biotech+Ramapuram+Chennai')}>
+                <Text style={styles.directionsBtnText}>Get Directions</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.locationCard}>
+              <View style={styles.locationIcon}><Text style={styles.locationIconText}>🌿</Text></View>
+              <Text style={styles.locationName}>Organic Farm</Text>
+              <Text style={styles.locationTitle}>Organic Farm</Text>
+              <Text style={styles.locationAddress}>SK Organic Farms{'\n'}Melkothakuppam{'\n'}Tamil Nadu 635805</Text>
+              <Text style={styles.locationPhone}>6380464748</Text>
+              <Text style={styles.locationHours}>By Appointment Only</Text>
+              <TouchableOpacity style={styles.directionsBtn} onPress={() => Linking.openURL('https://maps.google.com/?q=SK+Organic+Farms+Melkothakuppam')}>
+                <Text style={styles.directionsBtnText}>Get Directions</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
         {/* Newsletter */}
         <View style={styles.newsletterSection}>
           <Text style={styles.newsletterTitle}>Join Our Community 🌱</Text>
+          <Text style={styles.newsletterSub}>Get gardening tips, exclusive offers & 10% off your first order!</Text>
           <View style={styles.newsletterForm}>
-            <TextInput style={styles.newsletterInput} placeholder="Enter email" placeholderTextColor="#888" value={email} onChangeText={setEmail} />
+            <TextInput style={styles.newsletterInput} placeholder="Enter your e-mail" placeholderTextColor="#888" value={email} onChangeText={setEmail} />
             <TouchableOpacity style={styles.newsletterBtn}>
               <Text style={styles.newsletterBtnText}>Subscribe</Text>
             </TouchableOpacity>
@@ -439,18 +612,33 @@ const HomeScreen = ({navigation}: any) => {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerBrand}>Sunantha Organic Farms</Text>
-          <Text style={styles.footerContact}>📧 {brand.email}</Text>
-          <Text style={styles.footerContact}>📞 {brand.phone}</Text>
-          <Text style={styles.copyright}>© 2025 Sunantha Organic Farms</Text>
+          <Image source={{uri: LOGO_IMAGE}} style={styles.footerLogo} resizeMode="contain" />
+          <View style={styles.footerLinks}>
+            <Text style={styles.footerLink}>Refund Policy</Text>
+            <Text style={styles.footerLink}>Terms of Service</Text>
+            <Text style={styles.footerLink}>Privacy Policy</Text>
+          </View>
+          <View style={styles.footerContact}>
+            <Text style={styles.footerContactText}>Sales: +91-6380464748</Text>
+            <Text style={styles.footerContactText}>Mail: skofarms@gmail.com</Text>
+          </View>
+          <View style={styles.footerSocial}>
+            <Text style={styles.footerSocialIcon}>📘</Text>
+            <Text style={styles.footerSocialIcon}>📸</Text>
+            <Text style={styles.footerSocialIcon}>🐦</Text>
+          </View>
+          <Text style={styles.footerPayment}>We Accept: RuPay • UPI • GPay • Paytm • NetBanking</Text>
+          <Text style={styles.copyright}>© 2025, Sunantha Organic Farms</Text>
         </View>
       </ScrollView>
 
       {/* Voice Modal */}
-      <Modal visible={isListening} transparent={true} animationType="fade">
+      <Modal visible={isListening} transparent animationType="fade">
         <TouchableOpacity style={styles.voiceModal} activeOpacity={1} onPress={() => setIsListening(false)}>
           <View style={styles.voiceModalBox}>
-            <Text style={styles.voiceModalTitle}>🎤 Listening...</Text>
+            <Text style={styles.voiceModalIcon}>🎤</Text>
+            <Text style={styles.voiceModalTitle}>Search by voice</Text>
+            <Text style={styles.voiceModalSub}>Listening...</Text>
             <TouchableOpacity style={styles.voiceModalBtn} onPress={() => setIsListening(false)}>
               <Text style={styles.voiceModalBtnText}>Cancel</Text>
             </TouchableOpacity>
@@ -462,180 +650,215 @@ const HomeScreen = ({navigation}: any) => {
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#f8f8f8'},
+  container: {flex: 1, backgroundColor: '#f5f5f5'},
   content: {flex: 1},
   loadingContainer: {flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'},
-  loadingLogo: {width: 80, height: 80, marginBottom: 12},
-  loadingText: {marginTop: 8, color: '#1da362', fontSize: 13},
+  loadingLogo: {width: 100, height: 100, marginBottom: 16},
+  loadingText: {marginTop: 12, color: '#1da362', fontSize: 14},
 
   // Christmas Banner
-  christmasBanner: {backgroundColor: '#c41e3a', paddingVertical: 8, paddingHorizontal: 12, alignItems: 'center'},
-  christmasText: {color: '#fff', fontSize: 12},
+  christmasBanner: {backgroundColor: '#c41e3a', paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center'},
+  christmasText: {color: '#fff', fontSize: 12, textAlign: 'center'},
   christmasBold: {fontWeight: 'bold'},
-  christmasCode: {backgroundColor: '#fff', color: '#c41e3a', paddingHorizontal: 4, fontWeight: 'bold'},
+  christmasCode: {backgroundColor: '#fff', color: '#c41e3a', paddingHorizontal: 6, paddingVertical: 2, fontWeight: 'bold', borderRadius: 4, overflow: 'hidden'},
 
   // Header
-  header: {backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e5e5e5'},
-  topBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8},
-  headerLogo: {width: 100, height: 35},
+  header: {backgroundColor: '#fff', paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#e5e5e5'},
+  topBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10},
+  headerLogo: {width: 110, height: 40},
   locationRight: {flexDirection: 'row', alignItems: 'center'},
-  locationText: {fontSize: 12, color: '#666'},
-  locationBold: {fontWeight: 'bold', color: '#333'},
-
-  // Category Pills - Blinkit Style with circular images
-  categoryPillsContainer: {
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
-    paddingVertical: 10,
-  },
-  categoryPillsContent: {
-    paddingHorizontal: 8,
-    alignItems: 'center',
-  },
-  categoryPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 4,
-    paddingRight: 14,
-    paddingVertical: 4,
-    borderRadius: 25,
-    borderWidth: 1.5,
-    borderColor: '#e0e0e0',
-    marginHorizontal: 4,
-    backgroundColor: '#fff',
-    height: 42,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  categoryPillActive: {
-    backgroundColor: '#e8f5e9',
-    borderColor: '#1da362',
-  },
-  categoryPillOffer: {
-    backgroundColor: '#fff3e0',
-    borderColor: '#f59e0b',
-  },
-  categoryPillEmojiWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    marginRight: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  categoryPillEmoji: {
-    fontSize: 16,
-  },
-  categoryPillText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#333',
-  },
-  categoryPillTextActive: {
-    color: '#1da362',
-  },
-  categoryPillTextOffer: {
-    color: '#f57c00',
-  },
+  locationText: {fontSize: 18, marginRight: 6},
+  deliverTo: {fontSize: 10, color: '#888'},
+  locationBold: {fontWeight: 'bold', color: '#333', fontSize: 12},
 
   // Search
-  searchContainer: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 8},
-  searchWrap: {flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 8, paddingHorizontal: 10, height: 40},
+  searchContainer: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12},
+  searchWrap: {flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 8, paddingHorizontal: 12, height: 44},
   searchIconText: {fontSize: 16},
-  searchInput: {flex: 1, marginHorizontal: 8, fontSize: 13, padding: 0, color: '#333'},
-  voiceBtn: {padding: 4},
-  voiceIcon: {fontSize: 16},
-  cartBtn: {marginLeft: 12, padding: 4},
-  cartIconText: {fontSize: 22},
+  searchInput: {flex: 1, marginHorizontal: 10, fontSize: 14, color: '#333'},
+  voiceBtn: {padding: 6},
+  voiceIcon: {fontSize: 18},
+  cartBtn: {marginLeft: 12, position: 'relative'},
+  cartIconText: {fontSize: 26},
+  cartBadge: {position: 'absolute', top: -4, right: -4, backgroundColor: '#c41e3a', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center'},
+  cartBadgeText: {color: '#fff', fontSize: 10, fontWeight: 'bold'},
 
   // Hero
-  heroSection: {height: 180},
-  heroSlide: {width: width, height: 180},
+  heroSection: {height: 200},
+  heroSlide: {width: width, height: 200},
   heroImage: {width: '100%', height: '100%'},
-  heroOverlay: {position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: 'rgba(0,0,0,0.4)'},
-  heroTitle: {fontSize: 20, fontWeight: 'bold', color: '#fff'},
-  heroSubtitle: {fontSize: 11, color: '#fff', marginTop: 2},
-  heroBtn: {backgroundColor: '#1da362', alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, marginTop: 8},
-  heroBtnText: {color: '#fff', fontSize: 11, fontWeight: '600'},
-  heroDots: {position: 'absolute', bottom: 8, alignSelf: 'center', flexDirection: 'row'},
+  heroOverlay: {position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: 'rgba(0,0,0,0.45)'},
+  heroTag: {color: '#8bd4b2', fontSize: 10, fontWeight: '600', marginBottom: 4},
+  heroTitle: {fontSize: 22, fontWeight: 'bold', color: '#fff'},
+  heroSubtitle: {fontSize: 11, color: 'rgba(255,255,255,0.9)', marginTop: 4},
+  heroBtn: {backgroundColor: '#1da362', alignSelf: 'flex-start', paddingHorizontal: 18, paddingVertical: 8, borderRadius: 20, marginTop: 10},
+  heroBtnText: {color: '#fff', fontSize: 12, fontWeight: '600'},
+  heroDots: {position: 'absolute', bottom: 12, alignSelf: 'center', flexDirection: 'row'},
   heroDot: {width: 8, height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.5)', marginHorizontal: 3},
-  heroDotActive: {backgroundColor: '#fff', width: 20},
+  heroDotActive: {backgroundColor: '#fff', width: 24},
 
   // Flash Sale
   flashSale: {flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff8e1', padding: 12, marginHorizontal: 12, marginTop: 12, borderRadius: 12, borderWidth: 1, borderColor: '#ffd54f'},
-  flashIcon: {fontSize: 24, marginRight: 8},
-  flashInfo: {flex: 1},
+  flashLeft: {flexDirection: 'row', alignItems: 'center', flex: 1},
+  flashIcon: {fontSize: 28, marginRight: 10},
   flashTitle: {fontSize: 14, fontWeight: 'bold', color: '#333'},
   flashSub: {fontSize: 10, color: '#666'},
-  flashCountdown: {flexDirection: 'row', alignItems: 'center', marginRight: 10},
-  countdownBox: {backgroundColor: '#333', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 4},
-  countdownNum: {color: '#fff', fontSize: 12, fontWeight: 'bold'},
-  countdownSep: {color: '#333', fontSize: 14, fontWeight: 'bold', marginHorizontal: 2},
-  flashBtn: {backgroundColor: '#1da362', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 16},
+  flashCountdown: {flexDirection: 'row', marginRight: 12},
+  countdownBox: {backgroundColor: '#333', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, marginHorizontal: 2, alignItems: 'center'},
+  countdownNum: {color: '#fff', fontSize: 14, fontWeight: 'bold'},
+  countdownLabel: {color: 'rgba(255,255,255,0.7)', fontSize: 8},
+  flashBtn: {backgroundColor: '#1da362', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20},
   flashBtnText: {color: '#fff', fontSize: 11, fontWeight: '600'},
 
+  // Category Section
+  categorySection: {backgroundColor: '#fff', paddingVertical: 16, marginTop: 8},
+  categoryPillsContent: {paddingHorizontal: 12},
+  categoryPill: {alignItems: 'center', marginRight: 16},
+  categoryPillActive: {opacity: 0.8},
+  categoryEmojiWrap: {width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', marginBottom: 6},
+  categoryEmoji: {fontSize: 26},
+  categoryPillText: {fontSize: 11, color: '#333', fontWeight: '500'},
+
+  // Quick Info Bar
+  quickInfoBar: {flexDirection: 'row', backgroundColor: '#fff', paddingVertical: 12, paddingHorizontal: 8, marginTop: 2},
+  quickInfoItem: {flex: 1, alignItems: 'center'},
+  quickInfoEmoji: {fontSize: 20, marginBottom: 4},
+  quickInfoTitle: {fontSize: 11, fontWeight: 'bold', color: '#333'},
+  quickInfoSub: {fontSize: 9, color: '#888'},
+
   // Sections
-  section: {backgroundColor: '#fff', marginTop: 12, paddingVertical: 12},
-  sectionHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingHorizontal: 12, marginBottom: 10},
-  sectionTitle: {fontSize: 15, fontWeight: 'bold', color: '#333'},
+  section: {backgroundColor: '#fff', marginTop: 8, paddingVertical: 16},
+  sectionHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingHorizontal: 12, marginBottom: 12},
+  sectionTitle: {fontSize: 16, fontWeight: 'bold', color: '#333'},
   sectionSubtitle: {fontSize: 11, color: '#888', marginTop: 2},
-  viewAll: {fontSize: 11, color: '#1da362', fontWeight: '500'},
+  viewAll: {fontSize: 12, color: '#1da362', fontWeight: '500'},
   productsScroll: {paddingHorizontal: 8},
 
   // Product Card
-  productCard: {width: 130, backgroundColor: '#fff', borderRadius: 8, marginHorizontal: 4, borderWidth: 1, borderColor: '#eee', overflow: 'hidden'},
-  productImageWrap: {width: '100%', height: 100, backgroundColor: '#f9f9f9'},
+  productCard: {width: 140, backgroundColor: '#fff', borderRadius: 10, marginHorizontal: 4, borderWidth: 1, borderColor: '#eee', overflow: 'hidden'},
+  productImageWrap: {width: '100%', height: 110, backgroundColor: '#f9f9f9'},
   productImage: {width: '100%', height: '100%'},
-  saleBadge: {position: 'absolute', top: 6, left: 6, backgroundColor: '#e53935', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 3},
+  saleBadge: {position: 'absolute', top: 8, left: 8, backgroundColor: '#e53935', paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4},
   saleBadgeText: {color: '#fff', fontSize: 9, fontWeight: 'bold'},
-  productInfo: {padding: 8},
-  productTitle: {fontSize: 11, color: '#333', height: 28, lineHeight: 14},
-  priceRow: {flexDirection: 'row', alignItems: 'center', marginTop: 4},
-  productPrice: {fontSize: 13, fontWeight: 'bold', color: '#1da362'},
-  comparePrice: {fontSize: 10, color: '#999', textDecorationLine: 'line-through', marginLeft: 4},
-  addBtn: {backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#1da362', paddingVertical: 5, borderRadius: 6, alignItems: 'center', marginTop: 6},
-  addBtnText: {color: '#1da362', fontSize: 10, fontWeight: 'bold'},
+  productInfo: {padding: 10},
+  productTitle: {fontSize: 12, color: '#333', height: 32, lineHeight: 16},
+  priceRow: {flexDirection: 'row', alignItems: 'center', marginTop: 6},
+  productPrice: {fontSize: 14, fontWeight: 'bold', color: '#1da362'},
+  comparePrice: {fontSize: 11, color: '#999', textDecorationLine: 'line-through', marginLeft: 6},
+  addBtn: {backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#1da362', paddingVertical: 6, borderRadius: 6, alignItems: 'center', marginTop: 8},
+  addBtnText: {color: '#1da362', fontSize: 11, fontWeight: 'bold'},
 
-  // Trust
-  trustSection: {backgroundColor: '#fff', paddingVertical: 20, marginTop: 12},
-  trustTitle: {fontSize: 15, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 14},
-  trustGrid: {flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 8},
-  trustBadge: {alignItems: 'center', width: '22%'},
-  trustEmoji: {fontSize: 26, marginBottom: 6},
-  trustBadgeTitle: {fontSize: 10, fontWeight: '600', color: '#333', textAlign: 'center'},
+  // Services Section
+  servicesSection: {backgroundColor: '#f8fff8', paddingVertical: 20, marginTop: 8},
+  servicesSectionTitle: {fontSize: 18, fontWeight: 'bold', color: '#333', textAlign: 'center'},
+  servicesSectionSub: {fontSize: 12, color: '#666', textAlign: 'center', marginTop: 4, marginBottom: 16},
+  servicesGrid: {flexDirection: 'row', paddingHorizontal: 12},
+  serviceCard: {flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 14, marginHorizontal: 4, borderWidth: 1, borderColor: '#e0e0e0'},
+  serviceHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10},
+  serviceEmoji: {fontSize: 32},
+  serviceTypeBadge: {backgroundColor: '#e8f5e9', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12},
+  serviceTypeText: {fontSize: 9, color: '#1da362', fontWeight: '600'},
+  serviceTitle: {fontSize: 14, fontWeight: 'bold', color: '#333'},
+  serviceDesc: {fontSize: 10, color: '#666', marginTop: 6, lineHeight: 14},
+  serviceTags: {flexDirection: 'row', flexWrap: 'wrap', marginTop: 8},
+  serviceTag: {fontSize: 9, color: '#555', marginRight: 8, marginBottom: 4},
+  serviceBtn: {backgroundColor: '#1da362', paddingVertical: 8, borderRadius: 8, alignItems: 'center', marginTop: 10},
+  serviceBtnText: {color: '#fff', fontSize: 11, fontWeight: '600'},
 
-  // Locations
-  locationsSection: {backgroundColor: '#fff', paddingVertical: 16, marginTop: 12},
-  locationsTitle: {fontSize: 15, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 12},
-  locationCard: {backgroundColor: '#f9f9f9', marginHorizontal: 12, padding: 14, borderRadius: 10},
-  locationName: {fontSize: 14, fontWeight: 'bold', color: '#333'},
-  locationAddress: {fontSize: 11, color: '#666', marginTop: 4},
+  // Why Section
+  whySection: {backgroundColor: '#fff', paddingVertical: 24, marginTop: 8},
+  whySectionTitle: {fontSize: 18, fontWeight: 'bold', color: '#333', textAlign: 'center'},
+  whySectionSub: {fontSize: 12, color: '#666', textAlign: 'center', marginTop: 4, marginBottom: 20},
+  trustGrid: {flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12},
+  trustBadge: {width: '50%', alignItems: 'center', paddingVertical: 12},
+  trustEmoji: {fontSize: 32, marginBottom: 8},
+  trustTitle: {fontSize: 13, fontWeight: 'bold', color: '#333'},
+  trustDesc: {fontSize: 10, color: '#888', textAlign: 'center', marginTop: 2},
+
+  // Reviews Section
+  reviewsSection: {backgroundColor: '#fff', paddingVertical: 20, marginTop: 8},
+  reviewsSectionTitle: {fontSize: 18, fontWeight: 'bold', color: '#333', textAlign: 'center'},
+  reviewsSectionSub: {fontSize: 12, color: '#666', textAlign: 'center', marginTop: 4, marginBottom: 16},
+  reviewsScroll: {paddingHorizontal: 12},
+  reviewCard: {width: 280, backgroundColor: '#f9f9f9', borderRadius: 12, padding: 16, marginRight: 12},
+  reviewText: {fontSize: 13, color: '#333', fontStyle: 'italic', lineHeight: 20},
+  reviewAuthor: {flexDirection: 'row', alignItems: 'center', marginTop: 12},
+  reviewAvatar: {width: 36, height: 36, borderRadius: 18, backgroundColor: '#1da362', justifyContent: 'center', alignItems: 'center', marginRight: 10},
+  reviewAvatarText: {color: '#fff', fontSize: 16, fontWeight: 'bold'},
+  reviewName: {fontSize: 12, fontWeight: 'bold', color: '#333'},
+  reviewLocation: {fontSize: 10, color: '#888'},
+  reviewVerified: {fontSize: 9, color: '#1da362', marginLeft: 'auto'},
+  reviewStats: {flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 16, marginTop: 8, borderTopWidth: 1, borderTopColor: '#eee'},
+  reviewStat: {alignItems: 'center'},
+  reviewStatNum: {fontSize: 20, fontWeight: 'bold', color: '#1da362'},
+  reviewStatLabel: {fontSize: 10, color: '#888', marginTop: 2},
+
+  // Bottom Trust Bar
+  bottomTrustBar: {flexDirection: 'row', backgroundColor: '#f5f5f5', paddingVertical: 12},
+  bottomTrustItem: {flex: 1, alignItems: 'center'},
+  bottomTrustEmoji: {fontSize: 18},
+  bottomTrustText: {fontSize: 8, color: '#666', marginTop: 4, textAlign: 'center'},
+
+  // Brands Section
+  brandsSection: {backgroundColor: '#fff', paddingVertical: 20, marginTop: 8},
+  brandsSectionTitle: {fontSize: 16, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 16},
+  brandsScroll: {paddingHorizontal: 12},
+  brandCard: {width: 80, height: 50, backgroundColor: '#f9f9f9', borderRadius: 8, marginRight: 12, justifyContent: 'center', alignItems: 'center', padding: 8},
+  brandImage: {width: '100%', height: '100%'},
+
+  // Blog Section
+  blogSection: {backgroundColor: '#fff', paddingVertical: 16, marginTop: 8},
+  blogScroll: {paddingHorizontal: 8},
+  blogCard: {width: 180, backgroundColor: '#fff', borderRadius: 10, marginHorizontal: 4, borderWidth: 1, borderColor: '#eee', overflow: 'hidden'},
+  blogImagePlaceholder: {width: '100%', height: 100, backgroundColor: '#e8f5e9', justifyContent: 'center', alignItems: 'center'},
+  blogImageEmoji: {fontSize: 32},
+  blogDate: {fontSize: 10, color: '#888', paddingHorizontal: 10, paddingTop: 10},
+  blogTitle: {fontSize: 12, fontWeight: '600', color: '#333', paddingHorizontal: 10, paddingVertical: 8},
+
+  // Locations Section
+  locationsSection: {backgroundColor: '#fff', paddingVertical: 20, marginTop: 8},
+  locationsSectionTitle: {fontSize: 12, color: '#1da362', textAlign: 'center', fontWeight: '600'},
+  locationsSectionSub: {fontSize: 18, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 16},
+  locationsGrid: {paddingHorizontal: 12},
+  locationCard: {backgroundColor: '#f9f9f9', borderRadius: 12, padding: 16, marginBottom: 12},
+  locationIcon: {marginBottom: 8},
+  locationIconText: {fontSize: 24},
+  locationName: {fontSize: 10, color: '#1da362', fontWeight: '600'},
+  locationTitle: {fontSize: 16, fontWeight: 'bold', color: '#333', marginTop: 2},
+  locationAddress: {fontSize: 11, color: '#666', marginTop: 8, lineHeight: 16},
+  locationPhone: {fontSize: 12, color: '#333', fontWeight: '500', marginTop: 8},
+  locationHours: {fontSize: 10, color: '#888', marginTop: 4},
   directionsBtn: {backgroundColor: '#1da362', paddingVertical: 10, borderRadius: 8, alignItems: 'center', marginTop: 12},
   directionsBtnText: {color: '#fff', fontSize: 12, fontWeight: '600'},
 
   // Newsletter
-  newsletterSection: {backgroundColor: '#1da362', paddingVertical: 20, paddingHorizontal: 12, marginTop: 12},
-  newsletterTitle: {fontSize: 16, fontWeight: 'bold', color: '#fff', textAlign: 'center'},
-  newsletterForm: {flexDirection: 'row', marginTop: 12},
-  newsletterInput: {flex: 1, backgroundColor: '#fff', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 13},
-  newsletterBtn: {backgroundColor: '#163340', paddingHorizontal: 16, borderRadius: 8, justifyContent: 'center', marginLeft: 8},
-  newsletterBtnText: {color: '#fff', fontSize: 12, fontWeight: '600'},
+  newsletterSection: {backgroundColor: '#1da362', paddingVertical: 24, paddingHorizontal: 16, marginTop: 8},
+  newsletterTitle: {fontSize: 18, fontWeight: 'bold', color: '#fff', textAlign: 'center'},
+  newsletterSub: {fontSize: 12, color: 'rgba(255,255,255,0.9)', textAlign: 'center', marginTop: 4},
+  newsletterForm: {flexDirection: 'row', marginTop: 16},
+  newsletterInput: {flex: 1, backgroundColor: '#fff', borderRadius: 8, paddingHorizontal: 16, paddingVertical: 12, fontSize: 14},
+  newsletterBtn: {backgroundColor: '#163340', paddingHorizontal: 20, borderRadius: 8, justifyContent: 'center', marginLeft: 8},
+  newsletterBtnText: {color: '#fff', fontSize: 13, fontWeight: '600'},
 
   // Footer
-  footer: {backgroundColor: '#163340', paddingVertical: 20, alignItems: 'center'},
-  footerBrand: {fontSize: 14, fontWeight: 'bold', color: '#fff'},
-  footerContact: {fontSize: 11, color: 'rgba(255,255,255,0.7)', marginTop: 4},
-  copyright: {fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 8},
+  footer: {backgroundColor: '#163340', paddingVertical: 24, alignItems: 'center'},
+  footerLogo: {width: 100, height: 50, marginBottom: 16},
+  footerLinks: {flexDirection: 'row', marginBottom: 16},
+  footerLink: {color: 'rgba(255,255,255,0.7)', fontSize: 11, marginHorizontal: 10},
+  footerContact: {marginBottom: 12},
+  footerContactText: {color: 'rgba(255,255,255,0.8)', fontSize: 11, textAlign: 'center'},
+  footerSocial: {flexDirection: 'row', marginBottom: 16},
+  footerSocialIcon: {fontSize: 22, marginHorizontal: 10},
+  footerPayment: {color: 'rgba(255,255,255,0.6)', fontSize: 10, marginBottom: 12},
+  copyright: {color: 'rgba(255,255,255,0.5)', fontSize: 10},
 
   // Voice Modal
-  voiceModal: {flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center'},
-  voiceModalBox: {backgroundColor: '#fff', borderRadius: 16, padding: 24, alignItems: 'center', width: width * 0.75},
+  voiceModal: {flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center'},
+  voiceModalBox: {backgroundColor: '#fff', borderRadius: 20, padding: 32, alignItems: 'center', width: width * 0.8},
+  voiceModalIcon: {fontSize: 48, marginBottom: 12},
   voiceModalTitle: {fontSize: 18, fontWeight: 'bold', color: '#333'},
-  voiceModalBtn: {backgroundColor: '#f0f0f0', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, marginTop: 16},
+  voiceModalSub: {fontSize: 14, color: '#666', marginTop: 4},
+  voiceModalBtn: {backgroundColor: '#f0f0f0', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8, marginTop: 20},
   voiceModalBtnText: {color: '#666', fontWeight: '600'},
 });
 
