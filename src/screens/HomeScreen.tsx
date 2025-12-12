@@ -34,7 +34,7 @@ const {width} = Dimensions.get('window');
 const FILES_CDN = 'https://cdn.shopify.com/s/files/1/0551/4417/files';
 const LOGO_IMAGE = `${FILES_CDN}/LogoColorTextBelow_3223832e-681f-41c8-9347-b0f342a6384a.jpg`;
 
-// Category pills bar (like image) - with icons
+// Category pills bar (Blinkit style) - horizontal scroll with more categories
 const CATEGORY_PILLS = [
   {icon: '📋', name: 'All Products', handle: 'all', isActive: true, isOffer: false},
   {icon: '🌱', name: 'Seeds', handle: 'organic-seeds', isActive: false, isOffer: false},
@@ -45,6 +45,10 @@ const CATEGORY_PILLS = [
   {icon: '🌾', name: 'Millets', handle: 'organic-millets-rice', isActive: false, isOffer: false},
   {icon: '💚', name: 'Spirulina', handle: 'spirulina', isActive: false, isOffer: false},
   {icon: '🏆', name: 'Brands', handle: 'brands', isActive: false, isOffer: false},
+  {icon: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', isActive: false, isOffer: false},
+  {icon: '📦', name: 'Packages', handle: 'our-packages', isActive: false, isOffer: false},
+  {icon: '🧴', name: 'Skin Care', handle: 'skin-and-hair-care', isActive: false, isOffer: false},
+  {icon: '🌊', name: 'Sea Weed', handle: 'sea-weed-products', isActive: false, isOffer: false},
   {icon: '🏷️', name: 'Offers', handle: 'daily-deals', isActive: false, isOffer: true},
 ];
 
@@ -409,22 +413,30 @@ const HomeScreen = ({navigation}: any) => {
           <Text style={styles.contactText}>📞 {brand.phone}</Text>
         </View>
 
-        {/* Category Pills Bar (like image) */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryPillsScroll} contentContainerStyle={styles.categoryPillsContainer}>
-          {CATEGORY_PILLS.map((cat, i) => (
-            <TouchableOpacity 
-              key={i} 
-              style={[
-                styles.categoryPill, 
-                cat.isActive && styles.categoryPillActive,
-                cat.isOffer && styles.categoryPillOffer
-              ]} 
-              onPress={() => cat.handle === 'all' ? navigation.navigate('Collections') : navigateToCollection(cat.handle)}>
-              <Text style={[styles.categoryPillIcon, cat.isActive && styles.categoryPillIconActive, cat.isOffer && styles.categoryPillIconOffer]}>{cat.icon}</Text>
-              <Text style={[styles.categoryPillText, cat.isActive && styles.categoryPillTextActive, cat.isOffer && styles.categoryPillTextOffer]}>{cat.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        {/* Category Pills Bar (Blinkit style - horizontal scroll) */}
+        <View style={styles.categoryPillsWrapper}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            bounces={true}
+            decelerationRate="fast"
+            contentContainerStyle={styles.categoryPillsContainer}>
+            {CATEGORY_PILLS.map((cat, i) => (
+              <TouchableOpacity 
+                key={i} 
+                style={[
+                  styles.categoryPill, 
+                  cat.isActive && styles.categoryPillActive,
+                  cat.isOffer && styles.categoryPillOffer
+                ]} 
+                onPress={() => cat.handle === 'all' ? navigation.navigate('Collections') : navigateToCollection(cat.handle)}
+                activeOpacity={0.7}>
+                <Text style={[styles.categoryPillIcon, cat.isActive && styles.categoryPillIconActive, cat.isOffer && styles.categoryPillIconOffer]}>{cat.icon}</Text>
+                <Text style={[styles.categoryPillText, cat.isActive && styles.categoryPillTextActive, cat.isOffer && styles.categoryPillTextOffer]} numberOfLines={1}>{cat.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
@@ -850,16 +862,16 @@ const styles = StyleSheet.create({
   contactRow: {flexDirection: 'row', justifyContent: 'center', paddingVertical: 4, gap: 16},
   contactText: {fontSize: 10, color: '#666'},
   
-  // Category Pills Bar
-  categoryPillsScroll: {backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee'},
-  categoryPillsContainer: {paddingHorizontal: 8, paddingVertical: 10},
-  categoryPill: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5, borderColor: '#1da362', marginHorizontal: 4, backgroundColor: '#fff'},
+  // Category Pills Bar (Blinkit style)
+  categoryPillsWrapper: {backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e5e5e5', paddingVertical: 8},
+  categoryPillsContainer: {paddingHorizontal: 12, alignItems: 'center'},
+  categoryPill: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 18, borderWidth: 1.5, borderColor: '#1da362', marginRight: 8, backgroundColor: '#fff', height: 36},
   categoryPillActive: {backgroundColor: '#1da362', borderColor: '#1da362'},
   categoryPillOffer: {backgroundColor: '#f59e0b', borderColor: '#f59e0b'},
-  categoryPillIcon: {fontSize: 14, marginRight: 6, color: '#1da362'},
+  categoryPillIcon: {fontSize: 13, marginRight: 5, color: '#1da362'},
   categoryPillIconActive: {color: '#fff'},
   categoryPillIconOffer: {color: '#fff'},
-  categoryPillText: {fontSize: 12, fontWeight: '600', color: '#1da362'},
+  categoryPillText: {fontSize: 11, fontWeight: '600', color: '#1da362'},
   categoryPillTextActive: {color: '#fff'},
   categoryPillTextOffer: {color: '#fff'},
   searchContainer: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 8},
