@@ -34,22 +34,22 @@ const {width} = Dimensions.get('window');
 const FILES_CDN = 'https://cdn.shopify.com/s/files/1/0551/4417/files';
 const LOGO_IMAGE = `${FILES_CDN}/LogoColorTextBelow_3223832e-681f-41c8-9347-b0f342a6384a.jpg`;
 
-// Category pills with correct Shopify collection handles
+// Category pills with images (Blinkit style)
 const CATEGORY_PILLS = [
-  {icon: '📋', name: 'All Products', handle: 'all-products', type: 'all'},
-  {icon: '🌱', name: 'Seeds', handle: 'organic-seeds', type: 'collection'},
-  {icon: '🪴', name: 'Plants', handle: 'live-plants', type: 'collection'},
-  {icon: '🌿', name: 'Organic Manure', handle: 'organic-manures', type: 'collection'},
-  {icon: '🔧', name: 'Tools', handle: 'falcon-1', type: 'collection'},
-  {icon: '🏺', name: 'Pots', handle: 'planters', type: 'collection'},
-  {icon: '🌾', name: 'Millets', handle: 'organic-millets-rice', type: 'collection'},
-  {icon: '💚', name: 'Spirulina', handle: 'spirulina', type: 'collection'},
-  {icon: '🛍️', name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', type: 'collection'},
-  {icon: '📦', name: 'Packages', handle: 'our-packages', type: 'collection'},
-  {icon: '🧴', name: 'Skin Care', handle: 'skin-and-hair-care', type: 'collection'},
-  {icon: '🌊', name: 'Sea Weed', handle: 'sea-weed-products', type: 'collection'},
-  {icon: '🏆', name: 'Brands', handle: 'brands', type: 'brands'},
-  {icon: '🏷️', name: 'Offers', handle: 'daily-deals', type: 'offer'},
+  {image: `${FILES_CDN}/all-products-icon.png`, name: 'All Products', handle: 'all-products', type: 'all', color: '#1da362'},
+  {image: `${FILES_CDN}/IMG-2091.png`, name: 'Seeds', handle: 'organic-seeds', type: 'collection', color: '#4caf50'},
+  {image: `${FILES_CDN}/LemonGrass_e7758c23-de7a-4c5d-8689-dd59209ba9f5.jpg`, name: 'Plants', handle: 'live-plants', type: 'collection', color: '#8bc34a'},
+  {image: `${FILES_CDN}/IMG-2090.png`, name: 'Manure', handle: 'organic-manures', type: 'collection', color: '#795548'},
+  {image: `${FILES_CDN}/falcon.jpg`, name: 'Tools', handle: 'falcon-1', type: 'collection', color: '#607d8b'},
+  {image: `${FILES_CDN}/3110-05.jpg`, name: 'Pots', handle: 'planters', type: 'collection', color: '#ff9800'},
+  {image: `${FILES_CDN}/best_seller.jpg`, name: 'Millets', handle: 'organic-millets-rice', type: 'collection', color: '#ffc107'},
+  {image: `${FILES_CDN}/spirulina-powder.jpg`, name: 'Spirulina', handle: 'spirulina', type: 'collection', color: '#009688'},
+  {image: `${FILES_CDN}/IMG-2104.png`, name: 'Grow Bags', handle: 'grow-bags-for-terrace-garden', type: 'collection', color: '#3f51b5'},
+  {image: `${FILES_CDN}/IMG-2097.png`, name: 'Packages', handle: 'our-packages', type: 'collection', color: '#9c27b0'},
+  {image: `${FILES_CDN}/4786E3F2-BDCD-484D-9274-66DE8A5A4834.webp`, name: 'Skin Care', handle: 'skin-and-hair-care', type: 'collection', color: '#e91e63'},
+  {image: `${FILES_CDN}/SEAWEED.jpg`, name: 'Sea Weed', handle: 'sea-weed-products', type: 'collection', color: '#00bcd4'},
+  {image: `${FILES_CDN}/biocurve.jpg`, name: 'Brands', handle: 'brands', type: 'brands', color: '#673ab7'},
+  {image: `${FILES_CDN}/daily.png`, name: 'Offers', handle: 'daily-deals', type: 'offer', color: '#f44336'},
 ];
 
 // Hero slides
@@ -265,7 +265,7 @@ const HomeScreen = ({navigation}: any) => {
           </View>
         </View>
 
-        {/* Category Pills - Horizontal Scroll */}
+        {/* Category Pills - Blinkit Style with Images */}
         <View style={styles.categoryPillsContainer}>
           <FlatList
             horizontal={true}
@@ -283,11 +283,13 @@ const HomeScreen = ({navigation}: any) => {
                 onPress={() => handlePillPress(index, item)}
                 activeOpacity={0.7}
               >
-                <Text style={[
-                  styles.categoryPillIcon,
-                  index === activePill && styles.categoryPillIconActive,
-                  item.type === 'offer' && styles.categoryPillIconOffer,
-                ]}>{item.icon}</Text>
+                <View style={[styles.categoryPillImageWrap, {backgroundColor: item.color + '20'}]}>
+                  <Image 
+                    source={{uri: item.image}} 
+                    style={styles.categoryPillImage} 
+                    resizeMode="cover"
+                  />
+                </View>
                 <Text 
                   style={[
                     styles.categoryPillText,
@@ -477,54 +479,67 @@ const styles = StyleSheet.create({
   locationText: {fontSize: 12, color: '#666'},
   locationBold: {fontWeight: 'bold', color: '#333'},
 
-  // Category Pills - FIXED for proper scrolling
+  // Category Pills - Blinkit Style with circular images
   categoryPillsContainer: {
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
-    height: 50,
+    paddingVertical: 10,
   },
   categoryPillsContent: {
     paddingHorizontal: 8,
-    paddingVertical: 8,
     alignItems: 'center',
   },
   categoryPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    paddingLeft: 4,
+    paddingRight: 14,
+    paddingVertical: 4,
+    borderRadius: 25,
     borderWidth: 1.5,
-    borderColor: '#1da362',
+    borderColor: '#e0e0e0',
     marginHorizontal: 4,
     backgroundColor: '#fff',
-    height: 34,
+    height: 42,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
   },
   categoryPillActive: {
-    backgroundColor: '#1da362',
+    backgroundColor: '#e8f5e9',
     borderColor: '#1da362',
   },
   categoryPillOffer: {
-    backgroundColor: '#f59e0b',
+    backgroundColor: '#fff3e0',
     borderColor: '#f59e0b',
   },
-  categoryPillIcon: {
-    fontSize: 14,
-    marginRight: 4,
+  categoryPillImageWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    overflow: 'hidden',
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  categoryPillIconActive: {},
-  categoryPillIconOffer: {},
+  categoryPillImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+  },
   categoryPillText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
-    color: '#1da362',
+    color: '#333',
   },
   categoryPillTextActive: {
-    color: '#fff',
+    color: '#1da362',
   },
   categoryPillTextOffer: {
-    color: '#fff',
+    color: '#f57c00',
   },
 
   // Search
